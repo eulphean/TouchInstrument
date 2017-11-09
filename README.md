@@ -1,2 +1,2 @@
-# TouchInstrument
-This repo contains the Arduino project for capacitive touch on metal objects.
+# touchInstrument
+Arduino project to do capacitive touch sensing on metal objects. 
