@@ -5,8 +5,8 @@ void ofApp::setup() {
     serial.setup("/dev/cu.usbmodem1421", 9600);
   
     //--------PATCHING-------
-    osc.out_triangle() * 0.5f >> engine.audio_out(0);
-    osc.out_triangle() * 0.5f >> engine.audio_out(1);
+    osc.out_triangle() * 0.25f >> engine.audio_out(0);
+    osc.out_triangle() * 0.25f >> engine.audio_out(1);
   
     // Default
     60.0f >> osc.in_pitch();
