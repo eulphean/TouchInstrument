@@ -5,11 +5,23 @@ void ofApp::setup() {
     serial.setup("/dev/cu.usbmodem1421", 9600);
   
     //--------PATCHING-------
-    osc.out_triangle() * 0.25f >> engine.audio_out(0);
-    osc.out_triangle() * 0.25f >> engine.audio_out(1);
+    gui.setup();
+  
+    osc1.out_triangle() * 0.25f >> engine.audio_out(0);
+    osc1.out_triangle() * 0.25f >> engine.audio_out(1);
+  
+    osc1Group.add(pitch1.set("pitch", 60.0f, 0.0f, 440.0f));
+    gui.add(osc1Group);
+  
+    osc2.out_saw() * 0.25f >> engine.audio_out(0);
+    osc2.out_saw() * 0.25f >> engine.audio_out(1);
+        
+    osc2Group.add(pitch2.set("pitch", 60.0f, 0.0f, 440.0f));
+    gui.add(osc2Group);
   
     // Default
-    60.0f >> osc.in_pitch();
+    pitch1 >> osc1.in_pitch();
+    pitch2 >> osc2.in_pitch();
   
     //------------SETUPS AND START AUDIO-------------
     engine.listDevices();
@@ -60,18 +72,22 @@ void ofApp::update(){
             buffer += b;
         }
     }
+  
+    cout << pdsp::PitchToFreq::eval(pitch1.get()) << endl;
 }
 
 void ofApp::updatePitch() {
   // Update pitch of the sound.
   float newPitch = ofMap (sensorVal1, 200, 1500, 60.0f, 110.0f, true);
-  newPitch >> osc.in_pitch();
+  newPitch >> osc1.in_pitch();
   
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  ofDrawBitmapString(osc.meter_pitch(), 10, 10);
+  ofDrawBitmapString(osc1.meter_pitch(), 10, 10);
+  gui.draw();
+  
     // Creates squares on the screen.
   /*if (switchA) {
     // A successful touch has happened.

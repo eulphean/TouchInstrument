@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxPdsp.h"
+#include "ofxGui.h"
 
 using namespace std;
 
@@ -27,7 +28,16 @@ class ofApp : public ofBaseApp{
     unsigned int sensorVal1;
     unsigned int sensorVal2;
   
-    pdsp::VAOscillator  osc;
+    ofxPanel gui;
+    ofParameterGroup osc1Group;
+  
+    ofParameterGroup osc2Group;
+  
+    ofxPDSPValue pitch1;
+    ofxPDSPValue pitch2;
+  
+    pdsp::VAOscillator osc1;
+    pdsp::VAOscillator osc2;
     pdsp::LFO           lfo;
   
     // pdsp modules
