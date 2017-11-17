@@ -1,4 +1,4 @@
-#include <CapacitiveSensor.h>
+ #include <CapacitiveSensor.h>
 
 CapacitiveSensor cs_1_0 = CapacitiveSensor(5,4); // 1M resistor between pins 4 & 8, pin 8 is sensor pin, add a wire and or foil
 // 0 is the send pin. (OUTPUT)
@@ -28,12 +28,13 @@ void loop()
   long sensor1 = cs_1_0.capacitiveSensor(50);
   long sensor2 = cs_3_2.capacitiveSensor(50);
 
-  Serial.print("Sensor 1 - ");
-  Serial.println(sensor1);  // print sensor output 
-  Serial.print("Sensor 2 - ");
-  Serial.println(sensor2);  // print sensor output
+  // Data to be sent over serial communication to openFrameworks. 
+  Serial.print(sensor1);
+  Serial.print(",");
+  Serial.print(sensor2);
+  Serial.print("\n");
   
-  if(sensor1 >=1000)
+  if(sensor1 >=500)
   {
     digitalWrite(LED0,HIGH);
   }
@@ -41,11 +42,14 @@ void loop()
     digitalWrite(LED0,LOW);
   }  
 
-  if(sensor2 >=1000)
+  if(sensor2 >=500)
   {
     digitalWrite(LED1,HIGH);
   }
   else{
     digitalWrite(LED1,LOW);
   }  
+
+  // Delay to make sure serial buffers aren't overwhelmed.
+  delay(20);
 }
