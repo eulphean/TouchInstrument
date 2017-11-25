@@ -38,7 +38,9 @@ class ofApp : public ofBaseApp{
   
     pdsp::VAOscillator osc1;
     pdsp::VAOscillator osc2;
-    pdsp::LFO           lfo;
+  
+    pdsp::Amp amp;
+  
   
     // pdsp modules
     ofxPDSPEngine   engine;

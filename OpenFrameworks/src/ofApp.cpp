@@ -10,18 +10,18 @@ void ofApp::setup() {
     osc1.out_triangle() * 0.25f >> engine.audio_out(0);
     osc1.out_triangle() * 0.25f >> engine.audio_out(1);
   
-    osc1Group.add(pitch1.set("pitch", 60.0f, 0.0f, 440.0f));
+    osc1Group.add(pitch1.set("pitch 1", 60.0f, 0.0f, 440.0f));
     gui.add(osc1Group);
   
-    osc2.out_saw() * 0.25f >> engine.audio_out(0);
-    osc2.out_saw() * 0.25f >> engine.audio_out(1);
-        
-    osc2Group.add(pitch2.set("pitch", 60.0f, 0.0f, 440.0f));
+    //osc2.out_saw() * 0.25f >> engine.audio_out(0);
+    //osc2.out_saw() * 0.25f >> engine.audio_out(1);
+  
+    osc2Group.add(pitch2.set("pitch 2", 60.0f, 0.0f, 440.0f));
     gui.add(osc2Group);
   
     // Default
     pitch1 >> osc1.in_pitch();
-    pitch2 >> osc2.in_pitch();
+   // pitch2 >> osc2.in_pitch();
   
     //------------SETUPS AND START AUDIO-------------
     engine.listDevices();
