@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxPdsp.h"
 #include "ofxGui.h"
+#include "ofxMidi.h"
 
 using namespace std;
 
@@ -12,11 +12,13 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-    void updatePitch();
+    void exit();
+    void postMidi(int deviceId);
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
-    const int sensorThreshold = 1000;
+    const int sensorValMax = 180;
+    const int sensorValMin = 100;
     
     // An instance of the serial object. One instance is needed for each active
     // serial connection.
@@ -29,19 +31,8 @@ class ofApp : public ofBaseApp{
     unsigned int sensorVal2;
   
     ofxPanel gui;
-    ofParameterGroup osc1Group;
   
-    ofParameterGroup osc2Group;
-  
-    ofxPDSPValue pitch1;
-    ofxPDSPValue pitch2;
-  
-    pdsp::VAOscillator osc1;
-    pdsp::VAOscillator osc2;
-  
-    pdsp::Amp amp;
-  
-  
-    // pdsp modules
-    ofxPDSPEngine   engine;
+    // Midi integration.
+    ofxMidiOut midiOut;
+    int channel;
 };

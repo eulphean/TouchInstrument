@@ -3,30 +3,12 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
     serial.setup("/dev/cu.usbmodem1421", 9600);
-  
-    //--------PATCHING-------
     gui.setup();
   
-    osc1.out_triangle() * 0.25f >> engine.audio_out(0);
-    osc1.out_triangle() * 0.25f >> engine.audio_out(1);
+    // MIDI setup.
+    midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
   
-    osc1Group.add(pitch1.set("pitch 1", 60.0f, 0.0f, 440.0f));
-    gui.add(osc1Group);
-  
-    //osc2.out_saw() * 0.25f >> engine.audio_out(0);
-    //osc2.out_saw() * 0.25f >> engine.audio_out(1);
-  
-    osc2Group.add(pitch2.set("pitch 2", 60.0f, 0.0f, 440.0f));
-    gui.add(osc2Group);
-  
-    // Default
-    pitch1 >> osc1.in_pitch();
-   // pitch2 >> osc2.in_pitch();
-  
-    //------------SETUPS AND START AUDIO-------------
-    engine.listDevices();
-    engine.setDeviceID(1); // REMEMBER TO SET THIS AT THE RIGHT INDEX!!!!
-    engine.setup( 44100, 512, 2);
+    channel = 2;
 }
 
 //--------------------------------------------------------------
@@ -54,11 +36,20 @@ void ofApp::update(){
             // sure that our packet is correctly formed.
             if (tokens.size() == 2)
             {
+                // Midi device 0.
                 sensorVal1 = ofToInt(tokens[0]);
-                sensorVal2 = ofToInt(tokens[1]);
-                if (sensorVal1 > 200 || sensorVal2 > 200) {
-                  updatePitch();
+                if (sensorVal1 > sensorValMin) {
+                  postMidi(0);
                 }
+              
+                // Midi device 1.
+                sensorVal2 = ofToInt(tokens[1]);
+                if (sensorVal2 > sensorValMin) {
+                  postMidi(1);
+                }
+              
+                // TODO: Add another metal MIDI
+                // device.
             }
           
             std::cout << ofToString(tokens) << std::endl;
@@ -72,36 +63,32 @@ void ofApp::update(){
             buffer += b;
         }
     }
-  
-    cout << pdsp::PitchToFreq::eval(pitch1.get()) << endl;
 }
 
-void ofApp::updatePitch() {
-  // Update pitch of the sound.
-  float newPitch = ofMap (sensorVal1, 200, 1500, 60.0f, 110.0f, true);
-  newPitch >> osc1.in_pitch();
-  
-}
-
-//--------------------------------------------------------------
 void ofApp::draw(){
-  ofDrawBitmapString(osc1.meter_pitch(), 10, 10);
   gui.draw();
-  
-    // Creates squares on the screen.
-  /*if (switchA) {
-    // A successful touch has happened.
-    glm::vec2 point (ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-    ofSetColor(ofColor::red);
-    ofFill();
-    ofDrawRectangle(point, 100, 100);
+}
+
+void ofApp::postMidi(int deviceId){
+  switch (deviceId) {
+    case 0: {
+      // Min sensor value
+      unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
+      midiOut.sendControlChange(channel, 10, mapped);
+      break;
+    }
+    
+    case 1: {
+      unsigned int mapped = ofMap(sensorVal2, sensorValMin, sensorValMax, 0, 127, true);
+      midiOut.sendControlChange(channel, 11, mapped);
+      break;
+    }
+    
+    default:
+      break;
   }
-  
-  // Creates circles on the screen.
-  if (switchB) {
-    glm::vec2 point (ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-    ofSetColor(ofColor::blue);
-    ofFill();
-    ofDrawCircle(point, 100);
-  }*/
+}
+
+void ofApp::exit(){
+  midiOut.closePort();
 }

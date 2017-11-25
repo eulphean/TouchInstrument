@@ -34,22 +34,24 @@ void loop()
   Serial.print(sensor2);
   Serial.print("\n");
   
-  if(sensor1 >=500)
+  if(sensor1 >=400)
   {
+    int brightness = map(sensor1, 50, 1000, 10, 255); 
     digitalWrite(LED0,HIGH);
   }
   else{
     digitalWrite(LED0,LOW);
   }  
 
-  if(sensor2 >=500)
+  /*if(sensor2 >=200)
   {
     digitalWrite(LED1,HIGH);
   }
   else{
     digitalWrite(LED1,LOW);
-  }  
+  }  */
 
   // Delay to make sure serial buffers aren't overwhelmed.
   delay(20);
 }
+
