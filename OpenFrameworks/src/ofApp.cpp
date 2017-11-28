@@ -8,10 +8,13 @@ void ofApp::setup() {
     // Setup OSC.
     receive.setup(PORT);
   
+    // Setup Gui.
     gui.setup();
+  
     // MIDI setup.
     midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
-    channel = 2;
+    channelMidiNote = 2;
+    channelControlChange = 3;
 }
 
 //--------------------------------------------------------------
@@ -42,20 +45,17 @@ void ofApp::update(){
             // sure that our packet is correctly formed.
             if (tokens.size() == 2)
             {
-                // Midi device 0.
+                // Capacitive touch dish Left.
                 sensorVal1 = ofToInt(tokens[0]);
                 if (sensorVal1 > sensorValMin) {
-                  postMidi(0);
+                  sendMidiControlChange(0);
                 }
               
-                // Midi device 1.
+                // Capacitive touch dish right.
                 sensorVal2 = ofToInt(tokens[1]);
                 if (sensorVal2 > sensorValMin) {
-                  postMidi(1);
+                  sendMidiControlChange(1);
                 }
-              
-                // TODO: Add another metal MIDI
-                // device.
             }
           
             std::cout << ofToString(tokens) << std::endl;
@@ -83,50 +83,77 @@ void ofApp::processOscMessages() {
     #pragma warning(disable: WARNING_CODE)
     receive.getNextMessage(&m);
     
+    // Notes can range from 0 - 127. Make sure no two note
+    // numbers are same.
+    
     // Kick off Scene 1
     if (m.getAddress() == "/Scenes/4/1") {
       int val = m.getArgAsInt(0);
+      if (val == 1) {
+        sendMidiNoteOn(0);
+      }
     }
     
     // Kick off Scene 2
     if (m.getAddress() == "/Scenes/4/2") {
       int val = m.getArgAsInt(0);
+      if(val == 1) {
+        sendMidiNoteOn(1);
+      }
     }
     
     // Kick off Scene 3
     if (m.getAddress() == "/Scenes/4/3") {
       int val = m.getArgAsInt(0);
+      if (val == 1) {
+        sendMidiNoteOn(2);
+      }
     }
     
     // Kick off Scene 4
     if (m.getAddress() == "/Scenes/4/4") {
       int val = m.getArgAsInt(0);
+      if (val == 1) {
+        sendMidiNoteOn(3);
+      }
     }
     
     // Kick off Scene 5
     if (m.getAddress() == "/Scenes/4/5") {
       int val = m.getArgAsInt(0);
+      if (val == 1) {
+        sendMidiNoteOn(4);
+      }
     }
     
     // Kick off Scene 6
     if (m.getAddress() == "/Scenes/4/6") {
       int val = m.getArgAsInt(0);
+      if (val == 1) {
+        sendMidiNoteOn(5);
+      }
     }
   }
 }
 
-void ofApp::postMidi(int deviceId){
+void ofApp::sendMidiNoteOn(int midiNote) {
+  midiOut.sendNoteOn(channelMidiNote, midiNote, 64);
+  // Print Midi channel and note associated with it.
+  ofLogNotice() << "<Channel, Note>:<" << channelMidiNote << ", " << midiNote << ">";
+}
+
+void ofApp::sendMidiControlChange(int deviceId){
   switch (deviceId) {
     case 0: {
       // Min sensor value
       unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channel, 10, mapped);
+      midiOut.sendControlChange(channelControlChange, 10, mapped);
       break;
     }
     
     case 1: {
       unsigned int mapped = ofMap(sensorVal2, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channel, 11, mapped);
+      midiOut.sendControlChange(channelControlChange, 11, mapped);
       break;
     }
     
