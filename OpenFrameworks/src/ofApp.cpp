@@ -14,7 +14,8 @@ void ofApp::setup() {
     // MIDI setup.
     midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
     channelMidiNote = 2;
-    channelControlChange = 3;
+    channelControlChangeRotary = 3;
+    channelControlChangeDishes = 4;
 }
 
 //--------------------------------------------------------------
@@ -48,13 +49,13 @@ void ofApp::update(){
                 // Capacitive touch dish Left.
                 sensorVal1 = ofToInt(tokens[0]);
                 if (sensorVal1 > sensorValMin) {
-                  sendMidiControlChange(0);
+                  sendMidiControlChangeDishes(0);
                 }
               
                 // Capacitive touch dish right.
                 sensorVal2 = ofToInt(tokens[1]);
                 if (sensorVal2 > sensorValMin) {
-                  sendMidiControlChange(1);
+                  sendMidiControlChangeDishes(1);
                 }
             }
           
@@ -133,27 +134,94 @@ void ofApp::processOscMessages() {
         sendMidiNoteOn(5);
       }
     }
+    
+    // ------------------------ Rotary Knobs -----------------------
+    
+    // Left rotary.
+    if (m.getAddress() == "/RotaryLeft") {
+      float val = m.getArgAsFloat(0);
+      sendMidiControlChangeRotary(0, val);
+    }
+    
+    // Right rotary.
+    if (m.getAddress() == "/RotaryRight") {
+      float val = m.getArgAsFloat(0);
+      sendMidiControlChangeRotary(1, val);
+    }
+    
+    // ------------------------ Fader Knobs -----------------------
+    
+    // Fader 1
+    if (m.getAddress() == "/Scenes/fader1") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Fader 2
+    if (m.getAddress() == "/Scenes/fader2") {
+      float val = m.getArgAsFloat(0);
+    }
+    
+    // Fader 3
+    if (m.getAddress() == "/Scenes/fader3") {
+      float val = m.getArgAsFloat(0);
+    }
+    
+    // Fader 4
+    if (m.getAddress() == "/Scenes/fader4") {
+      float val = m.getArgAsFloat(0);
+    }
+    
+    // Fader 5
+    if (m.getAddress() == "/Scenes/fader5") {
+      float val = m.getArgAsFloat(0);
+    }
   }
 }
 
+// Scene selection.
 void ofApp::sendMidiNoteOn(int midiNote) {
   midiOut.sendNoteOn(channelMidiNote, midiNote, 64);
   // Print Midi channel and note associated with it.
   ofLogNotice() << "<Channel, Note>:<" << channelMidiNote << ", " << midiNote << ">";
 }
 
-void ofApp::sendMidiControlChange(int deviceId){
-  switch (deviceId) {
+// Rotary button mapping.
+void ofApp::sendMidiControlChangeRotary(int device, float val) {
+  
+  // Map rotary values to Midi signals.
+  int midiVal = ofMap(val, 0, 1, 0, 127, true);
+  
+  switch (device) {
+    case 0: {
+      // Channel, control, midi value
+      midiOut.sendControlChange(channelControlChangeRotary, 10, midiVal);
+      break;
+    }
+    
+    case 1: {
+      // Channel, control, midi value
+      midiOut.sendControlChange(channelControlChangeRotary, 11, midiVal);
+      break;
+    }
+    
+    default:
+      break;
+  }
+}
+
+// Capacitance to MIDI. 
+void ofApp::sendMidiControlChangeDishes(int device){
+  switch (device) {
     case 0: {
       // Min sensor value
       unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channelControlChange, 10, mapped);
+      midiOut.sendControlChange(channelControlChangeDishes, 10, mapped);
       break;
     }
     
     case 1: {
       unsigned int mapped = ofMap(sensorVal2, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channelControlChange, 11, mapped);
+      midiOut.sendControlChange(channelControlChangeDishes, 11, mapped);
       break;
     }
     

@@ -16,9 +16,14 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     void exit();
-    void sendMidiNoteOn(int midiNote);
-    void sendMidiControlChange(int deviceId);
+  
+    // OSC utils.
     void processOscMessages();
+  
+    // Midi utils.
+    void sendMidiNoteOn(int midiNote);
+    void sendMidiControlChangeDishes(int device);
+    void sendMidiControlChangeRotary(int device, float val);
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
@@ -39,7 +44,7 @@ class ofApp : public ofBaseApp{
   
     // Midi integration.
     ofxMidiOut midiOut;
-    int channelMidiNote, channelControlChange;
+    int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
   
     // Touch OSC parameters.
     ofxOscReceiver receive;
