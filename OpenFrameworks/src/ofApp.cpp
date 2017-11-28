@@ -2,17 +2,23 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+    // Arduino to talk to.
     serial.setup("/dev/cu.usbmodem1421", 9600);
-    gui.setup();
   
+    // Setup OSC.
+    receive.setup(PORT);
+  
+    gui.setup();
     // MIDI setup.
     midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
-  
     channel = 2;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    // Service Osc messages. 
+    processOscMessages();
+  
     // As long as there is serial data available to read, repeat.
     while (serial.available() > 0)
     {
@@ -67,6 +73,46 @@ void ofApp::update(){
 
 void ofApp::draw(){
   gui.draw();
+}
+
+void ofApp::processOscMessages() {
+  // Touch OSC updates.
+  while (receive.hasWaitingMessages()) {
+    ofxOscMessage m;
+    // Set the next message.
+    #pragma warning(disable: WARNING_CODE)
+    receive.getNextMessage(&m);
+    
+    // Kick off Scene 1
+    if (m.getAddress() == "/Scenes/4/1") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Kick off Scene 2
+    if (m.getAddress() == "/Scenes/4/2") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Kick off Scene 3
+    if (m.getAddress() == "/Scenes/4/3") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Kick off Scene 4
+    if (m.getAddress() == "/Scenes/4/4") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Kick off Scene 5
+    if (m.getAddress() == "/Scenes/4/5") {
+      int val = m.getArgAsInt(0);
+    }
+    
+    // Kick off Scene 6
+    if (m.getAddress() == "/Scenes/4/6") {
+      int val = m.getArgAsInt(0);
+    }
+  }
 }
 
 void ofApp::postMidi(int deviceId){

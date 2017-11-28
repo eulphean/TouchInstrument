@@ -3,8 +3,11 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxMidi.h"
+#include "ofxOsc.h"
 
 using namespace std;
+
+#define PORT 8000
 
 class ofApp : public ofBaseApp{
 
@@ -14,6 +17,7 @@ class ofApp : public ofBaseApp{
 		void draw();
     void exit();
     void postMidi(int deviceId);
+    void processOscMessages();
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
@@ -35,4 +39,7 @@ class ofApp : public ofBaseApp{
     // Midi integration.
     ofxMidiOut midiOut;
     int channel;
+  
+    // Touch OSC parameters.
+    ofxOscReceiver receive;
 };
