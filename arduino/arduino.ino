@@ -9,6 +9,7 @@ CapacitiveSensor cs_3_2 = CapacitiveSensor(7,6);
 
 int LED0 = 8;
 int LED1 = 9;
+int TRIM = A5;
 
 void setup()                    
 {
@@ -19,10 +20,11 @@ void setup()
    // LEDS
    pinMode(LED0,OUTPUT);
    pinMode(LED1, OUTPUT);
+   pinMode(TRIM, INPUT);
 }
 
 void loop()                    
-{
+{ 
   // Sets the number of samples based on which the sensor value is
   // calculated. More the samples, higher the delay but more accuracy.
   long sensor1 = cs_1_0.capacitiveSensor(50);
@@ -34,14 +36,14 @@ void loop()
   Serial.print(sensor2);
   Serial.print("\n");
   
-  if(sensor1 >=400)
+ /* if(sensor1 >=400)
   {
     int brightness = map(sensor1, 50, 1000, 10, 255); 
     digitalWrite(LED0,HIGH);
   }
   else{
     digitalWrite(LED0,LOW);
-  }  
+  }  */
 
   /*if(sensor2 >=200)
   {
@@ -54,4 +56,5 @@ void loop()
   // Delay to make sure serial buffers aren't overwhelmed.
   delay(20);
 }
+
 
