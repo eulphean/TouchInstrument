@@ -92,6 +92,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if (val == 1) {
         sendMidiNoteOn(0);
+        currentScene = 1;
       }
     }
     
@@ -100,6 +101,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if(val == 1) {
         sendMidiNoteOn(1);
+        currentScene = 2;
       }
     }
     
@@ -108,6 +110,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if (val == 1) {
         sendMidiNoteOn(2);
+        currentScene = 3;
       }
     }
     
@@ -116,6 +119,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if (val == 1) {
         sendMidiNoteOn(3);
+        currentScene = 4;
       }
     }
     
@@ -124,6 +128,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if (val == 1) {
         sendMidiNoteOn(4);
+        currentScene = 5;
       }
     }
     
@@ -132,6 +137,7 @@ void ofApp::processOscMessages() {
       int val = m.getArgAsInt(0);
       if (val == 1) {
         sendMidiNoteOn(5);
+        currentScene = 6;
       }
     }
     
@@ -187,26 +193,27 @@ void ofApp::sendMidiNoteOn(int midiNote) {
 
 // Rotary button mapping.
 void ofApp::sendMidiControlChangeRotary(int device, float val) {
-  
-  // Map rotary values to Midi signals.
-  int midiVal = ofMap(val, 0, 1, 0, 127, true);
-  
-  switch (device) {
-    case 0: {
-      // Channel, control, midi value
-      midiOut.sendControlChange(channelControlChangeRotary, 10, midiVal);
-      break;
+  //if (currentScene == 2 || currentScene == 3) { // Or any scene during which I want to use the dishes, put it here.
+    // Map rotary values to Midi signals.
+    int midiVal = ofMap(val, 0, 1, 0, 127, true);
+
+    switch (device) {
+      case 0: {
+        // Channel, control, midi value
+        midiOut.sendControlChange(channelControlChangeRotary, 10, midiVal);
+        break;
+      }
+      
+      case 1: {
+        // Channel, control, midi value
+        midiOut.sendControlChange(channelControlChangeRotary, 11, midiVal);
+        break;
+      }
+      
+      default:
+        break;
     }
-    
-    case 1: {
-      // Channel, control, midi value
-      midiOut.sendControlChange(channelControlChangeRotary, 11, midiVal);
-      break;
-    }
-    
-    default:
-      break;
-  }
+  //}
 }
 
 // Capacitance to MIDI. 

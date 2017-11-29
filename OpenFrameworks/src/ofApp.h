@@ -27,7 +27,7 @@ class ofApp : public ofBaseApp{
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
-    const int sensorValMax = 180;
+    const int sensorValMax = 400;
     const int sensorValMin = 100;
     
     // An instance of the serial object. One instance is needed for each active
@@ -48,4 +48,8 @@ class ofApp : public ofBaseApp{
   
     // Touch OSC parameters.
     ofxOscReceiver receive;
+  
+    // Ableton specific logic.
+    int currentScene;
+     
 };
