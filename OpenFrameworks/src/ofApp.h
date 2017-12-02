@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
-#include "ofxMidi.h"
+//#include "ofxMidi.h"
 #include "Osc.h"
 
 using namespace std;
@@ -38,8 +38,8 @@ class ofApp : public ofBaseApp{
     ofxPanel gui;
   
     // Midi integration.
-    ofxMidiOut midiOut;
-    int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
+//    ofxMidiOut midiOut;
+//    int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
   
     // OSC
     Osc oscHandler;

@@ -16,9 +16,7 @@ class Midi {
     static Midi &instance();
     
   private:
-    // Private constructor.
-    Midi();
-    static Midi m;
     ofxMidiOut midiOut;
+    static Midi m;
     int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
 };

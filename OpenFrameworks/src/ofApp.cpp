@@ -14,12 +14,6 @@ void ofApp::setup() {
   
     // Setup Gui.
     gui.setup();
-  
-    // MIDI setup.
-    midiOut.openVirtualPort("ofxMidiOut"); // open a virtual port
-    channelMidiNote = 2;
-    channelControlChangeRotary = 3;
-    channelControlChangeDishes = 4;
 }
 
 //--------------------------------------------------------------
