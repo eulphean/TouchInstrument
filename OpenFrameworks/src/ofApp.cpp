@@ -1,12 +1,16 @@
 #include "ofApp.h"
+#include "Midi.h"
 
 //--------------------------------------------------------------
 void ofApp::setup() {
     // Arduino to talk to.
     serial.setup("/dev/cu.usbmodem1421", 9600);
   
-    // Setup OSC.
-    receive.setup(PORT);
+    // Setup Osc.
+    oscHandler.setup();
+  
+    // Setup Midi.
+    Midi::instance().setup();
   
     // Setup Gui.
     gui.setup();
@@ -20,9 +24,8 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // Service Osc messages. 
-    processOscMessages();
-  
+    oscHandler.update();
+    
     // As long as there is serial data available to read, repeat.
     while (serial.available() > 0)
     {
@@ -49,13 +52,17 @@ void ofApp::update(){
                 // Capacitive touch dish Left.
                 sensorVal1 = ofToInt(tokens[0]);
                 if (sensorVal1 > sensorValMin) {
-                  sendMidiControlChangeDishes(0);
+                  // Map sensor value to Midi before sending to Midi handler.
+                  unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
+                  Midi::instance().sendMidiControlChangeDishes(0, mapped);
                 }
               
                 // Capacitive touch dish right.
                 sensorVal2 = ofToInt(tokens[1]);
                 if (sensorVal2 > sensorValMin) {
-                  sendMidiControlChangeDishes(1);
+                  // Map sensor value to Midi before sending to Midi handler.
+                  unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
+                  Midi::instance().sendMidiControlChangeDishes(1, mapped);
                 }
             }
           
@@ -76,167 +83,7 @@ void ofApp::draw(){
   gui.draw();
 }
 
-void ofApp::processOscMessages() {
-  // Touch OSC updates.
-  while (receive.hasWaitingMessages()) {
-    ofxOscMessage m;
-    // Set the next message.
-    #pragma warning(disable: WARNING_CODE)
-    receive.getNextMessage(&m);
-    
-    // Notes can range from 0 - 127. Make sure no two note
-    // numbers are same.
-    
-    // Kick off Scene 1
-    if (m.getAddress() == "/Scenes/4/1") {
-      int val = m.getArgAsInt(0);
-      if (val == 1) {
-        sendMidiNoteOn(0);
-        currentScene = 1;
-      }
-    }
-    
-    // Kick off Scene 2
-    if (m.getAddress() == "/Scenes/4/2") {
-      int val = m.getArgAsInt(0);
-      if(val == 1) {
-        sendMidiNoteOn(1);
-        currentScene = 2;
-      }
-    }
-    
-    // Kick off Scene 3
-    if (m.getAddress() == "/Scenes/4/3") {
-      int val = m.getArgAsInt(0);
-      if (val == 1) {
-        sendMidiNoteOn(2);
-        currentScene = 3;
-      }
-    }
-    
-    // Kick off Scene 4
-    if (m.getAddress() == "/Scenes/4/4") {
-      int val = m.getArgAsInt(0);
-      if (val == 1) {
-        sendMidiNoteOn(3);
-        currentScene = 4;
-      }
-    }
-    
-    // Kick off Scene 5
-    if (m.getAddress() == "/Scenes/4/5") {
-      int val = m.getArgAsInt(0);
-      if (val == 1) {
-        sendMidiNoteOn(4);
-        currentScene = 5;
-      }
-    }
-    
-    // Kick off Scene 6
-    if (m.getAddress() == "/Scenes/4/6") {
-      int val = m.getArgAsInt(0);
-      if (val == 1) {
-        sendMidiNoteOn(5);
-        currentScene = 6;
-      }
-    }
-    
-    // ------------------------ Rotary Knobs -----------------------
-    
-    // Left rotary.
-    if (m.getAddress() == "/RotaryLeft") {
-      float val = m.getArgAsFloat(0);
-      sendMidiControlChangeRotary(0, val);
-    }
-    
-    // Right rotary.
-    if (m.getAddress() == "/RotaryRight") {
-      float val = m.getArgAsFloat(0);
-      sendMidiControlChangeRotary(1, val);
-    }
-    
-    // ------------------------ Fader Knobs -----------------------
-    
-    // Fader 1
-    if (m.getAddress() == "/Scenes/fader1") {
-      int val = m.getArgAsInt(0);
-    }
-    
-    // Fader 2
-    if (m.getAddress() == "/Scenes/fader2") {
-      float val = m.getArgAsFloat(0);
-    }
-    
-    // Fader 3
-    if (m.getAddress() == "/Scenes/fader3") {
-      float val = m.getArgAsFloat(0);
-    }
-    
-    // Fader 4
-    if (m.getAddress() == "/Scenes/fader4") {
-      float val = m.getArgAsFloat(0);
-    }
-    
-    // Fader 5
-    if (m.getAddress() == "/Scenes/fader5") {
-      float val = m.getArgAsFloat(0);
-    }
-  }
-}
-
-// Scene selection.
-void ofApp::sendMidiNoteOn(int midiNote) {
-  midiOut.sendNoteOn(channelMidiNote, midiNote, 64);
-  // Print Midi channel and note associated with it.
-  ofLogNotice() << "<Channel, Note>:<" << channelMidiNote << ", " << midiNote << ">";
-}
-
-// Rotary button mapping.
-void ofApp::sendMidiControlChangeRotary(int device, float val) {
-  //if (currentScene == 2 || currentScene == 3) { // Or any scene during which I want to use the dishes, put it here.
-    // Map rotary values to Midi signals.
-    int midiVal = ofMap(val, 0, 1, 0, 127, true);
-
-    switch (device) {
-      case 0: {
-        // Channel, control, midi value
-        midiOut.sendControlChange(channelControlChangeRotary, 10, midiVal);
-        break;
-      }
-      
-      case 1: {
-        // Channel, control, midi value
-        midiOut.sendControlChange(channelControlChangeRotary, 11, midiVal);
-        break;
-      }
-      
-      default:
-        break;
-    }
-  //}
-}
-
-// Capacitance to MIDI. 
-void ofApp::sendMidiControlChangeDishes(int device){
-  switch (device) {
-    case 0: {
-      // Min sensor value
-      unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channelControlChangeDishes, 10, mapped);
-      break;
-    }
-    
-    case 1: {
-      unsigned int mapped = ofMap(sensorVal2, sensorValMin, sensorValMax, 0, 127, true);
-      midiOut.sendControlChange(channelControlChangeDishes, 11, mapped);
-      break;
-    }
-    
-    default:
-      break;
-  }
-}
-
 void ofApp::exit(){
-  midiOut.closePort();
+  Midi::instance().exit();
 }
+

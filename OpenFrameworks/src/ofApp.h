@@ -3,11 +3,9 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxMidi.h"
-#include "ofxOsc.h"
+#include "Osc.h"
 
 using namespace std;
-
-#define PORT 8000
 
 class ofApp : public ofBaseApp{
 
@@ -16,9 +14,6 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     void exit();
-  
-    // OSC utils.
-    void processOscMessages();
   
     // Midi utils.
     void sendMidiNoteOn(int midiNote);
@@ -46,8 +41,8 @@ class ofApp : public ofBaseApp{
     ofxMidiOut midiOut;
     int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
   
-    // Touch OSC parameters.
-    ofxOscReceiver receive;
+    // OSC
+    Osc oscHandler;
   
     // Ableton specific logic.
     int currentScene;
