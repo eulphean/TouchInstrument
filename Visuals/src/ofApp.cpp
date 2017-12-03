@@ -8,9 +8,12 @@ void ofApp::setup(){
   
   // Setup fft.
   CommonFFT::instance().fft.setup();
+  CommonFFT::instance().fft.setNormalize(true); // Give the volume range of each frequency between 0-1
+  CommonFFT::instance().fft.setNumFFTBins(48);
   
   // Setup stripes
-  stripeOne.setup(0);
+  archStripe.setup(0);
+  fftStripe.setup(1);
   
   gui.setup();
   
@@ -39,7 +42,9 @@ void ofApp::setup(){
 void ofApp::update(){
   // Update fft.
   CommonFFT::instance().fft.update();
-  stripeOne.update(offset, rotation);
+  
+  archStripe.update(offset, rotation);
+  fftStripe.update(offset, rotation);
   
   /*player.update();
   grabber.update();
@@ -51,7 +56,8 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
   gui.draw();
-  stripeOne.draw();
+  //stripeOne.draw();
+  fftStripe.draw();
   
   /*ofEnableBlendMode(OF_BLENDMODE_ADD);
   

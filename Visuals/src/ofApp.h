@@ -24,5 +24,6 @@ class ofApp : public ofBaseApp{
     ofxFloatSlider offset, rotation;
   
     // Visuals
-    Stripes stripeOne;
+    Stripes archStripe;
+    Stripes fftStripe;
 };

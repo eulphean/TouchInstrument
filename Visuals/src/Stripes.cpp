@@ -59,6 +59,72 @@ void Stripes::stripeZero() {
 
 // Sonic stripes.
 void Stripes::stripeOne() {
+  // Represent fft bars with stripes.
+  
+  vector<float> fftSpectrum = CommonFFT::instance().fft.getSpectrum();
+  int numOfBins = CommonFFT::instance().fft.getNumFFTbins();
+  
+  ofPushStyle();
+    ofPushMatrix();
+      ofTranslate(numOfBins/2, center.y);
+      float offset = ofGetWidth() / numOfBins;
+      for (int x = 0; x < fftSpectrum.size(); x++) {
+        ofPushMatrix();
+          ofTranslate(x*offset, 0);
+          int color = ofMap(sin(elapsedTime), -1, 1, 0, 255);
+          ofColor hue = ofColor::fromHsb(color, 255, 255);
+          ofSetColor(hue);
+          
+          // Since fft values are normalized, we range it from -0-1
+          float stripeHeight = ofMap(fftSpectrum[x], 0, 1, 0, ofGetHeight() -50);
+        
+          ofSetLineWidth(5);
+          ofDrawLine(0, -stripeHeight/2, 0, stripeHeight/2);
+        ofPopMatrix();
+      }
+    ofPopMatrix();
+  ofPopStyle();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
   ofSetLineWidth(2);
   ofSetColor(ofColor::black);
   for(int i =-lines; i<lines; i++){
@@ -72,8 +138,8 @@ void Stripes::stripeOne() {
     // Reset the coordinate system.
     ofPopMatrix();
   }
-}
-/*
+  
+ 
 void Stripes::drawLine() {
   // Potentially read this line from some real time data.
   float length;
