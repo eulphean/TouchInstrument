@@ -14,6 +14,8 @@ void ofApp::setup(){
   // Setup stripes
   stripeModule.setup();
   
+  stripeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+  
   gui.setup();
   
   // Stripe mixer
@@ -23,16 +25,16 @@ void ofApp::setup(){
   //stripeMixer.add(rotation.setup("blend1", 0, 0, 255));
   stripeMixer.add(blend.setup("blend", 0, 0, 255));
   
-  
+  player.load("ableton.mov");
+  player.play();
   /*ofLoadImage (img, "prussik.jpg");
-  player.loadMovie("ableton.mov");
   grabber.setup(ofGetWidth(), ofGetHeight());
   player.play();*/
   
   // Setup
   mixer.setup("Global Mixer");
-  mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
-  //mixer.add(playerAlpha.setup("video", 200.0, 0.0, 255.0));
+  //mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
+  mixer.add(playerAlpha.setup("video", 0.0, 0.0, 255.0));
   //mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));
   
   gui.add(&mixer);
@@ -46,8 +48,16 @@ void ofApp::update(){
   CommonFFT::instance().fft.update();
   
   stripeModule.update(offset, rotation, blend);
-  /*player.update();
-  grabber.update();
+  
+  // Draw the module in fbo.
+  stripeFbo.begin();
+    ofClear(255, 255, 255, 0);
+    ofBackground(ofColor::black);
+    stripeModule.draw();
+  stripeFbo.end();
+  
+  player.update();
+  /*grabber.update();
   if (grabber.isFrameNew()){
     // Do something with pixels from the grabber.
   }*/
@@ -55,23 +65,18 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-glDepthFunc( GL_LEQUAL);
-  gui.draw();
+
+  ofEnableBlendMode(OF_BLENDMODE_ADD);
   
-  stripeModule.draw();
-  
-  /*ofEnableBlendMode(OF_BLENDMODE_ADD);
-  
-  ofSetColor (255, imageAlpha);
-  img.draw(0, 0, ofGetWidth(), ofGetHeight());
+  ofSetColor(255, 255-playerAlpha);
+  stripeFbo.draw(0, 0);
   
   ofSetColor (255, playerAlpha);
   player.draw(0, 0, ofGetWidth(), ofGetHeight());
   
-  ofSetColor(255, grabberAlpha);
-  grabber.draw(0, 0);
+  ofEnableAlphaBlending();
   
-  ofEnableAlphaBlending();*/
+  gui.draw();
 }
 
 // Setup sliders to fade between different effects and sort of overlap them.

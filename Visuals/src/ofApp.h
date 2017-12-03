@@ -13,8 +13,9 @@ class ofApp : public ofBaseApp{
 		void draw();
   
     /*ofTexture img;
-    ofVideoPlayer player;
     ofVideoGrabber grabber;*/
+  
+    ofVideoPlayer player;
   
     ofxPanel gui;
     ofxGuiGroup mixer;
@@ -23,7 +24,7 @@ class ofApp : public ofBaseApp{
     ofxGuiGroup stripeMixer;
     ofxFloatSlider offset, rotation, blend;
 
-  
+    ofFbo stripeFbo;
     // Visuals
     Stripes stripeModule;
 };
