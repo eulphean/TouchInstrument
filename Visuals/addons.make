@@ -1,0 +1,6 @@
+ofxFX
+ofxFft
+ofxFlowTools
+ofxGui
+ofxKinectV2
+ofxKsmrFragmentFx
