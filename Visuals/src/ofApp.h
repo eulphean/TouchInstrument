@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxProcessFFT.h"
+#include "ofxKsmrFragmentFx.h"
 #include "Stripes.h"
 
 class ofApp : public ofBaseApp{
@@ -12,8 +13,8 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
   
-    /*ofTexture img;
-    ofVideoGrabber grabber;*/
+    //ofImage img;
+    //ofVideoGrabber grabber;
   
     ofVideoPlayer player;
   
@@ -23,8 +24,16 @@ class ofApp : public ofBaseApp{
   
     ofxGuiGroup stripeMixer;
     ofxFloatSlider offset, rotation, blend;
-
     ofFbo stripeFbo;
+  
+    ofxGuiGroup ksmrShader;
+    ofxFloatSlider volume;
+    
     // Visuals
     Stripes stripeModule;
+  
+    ofFbo::Settings		setting;
+    ofFbo				original;
+    ofxKsmrFragmentFx	fx;
+    //ofImage				image;
 };

@@ -31,7 +31,10 @@ void ofApp::setup(){
   grabber.setup(ofGetWidth(), ofGetHeight());
   player.play();*/
   
-  // Setup
+  // Ksmr shader
+  ksmrShader.setup("Ksmr shader");
+  ksmrShader.add(volume.setup("Volume", 1.0, 0.0, 1.0));
+  
   mixer.setup("Global Mixer");
   //mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
   mixer.add(playerAlpha.setup("video", 0.0, 0.0, 255.0));
@@ -40,6 +43,16 @@ void ofApp::setup(){
   gui.add(&mixer);
   
   gui.add(&stripeMixer);
+  
+  gui.add(&ksmrShader);
+  
+  setting.width  = 512;
+	setting.height = 512;
+
+	original.allocate(setting);
+
+	//ksmrFX setup
+	fx.setup(&original, setting);
 }
 
 //--------------------------------------------------------------
@@ -61,20 +74,56 @@ void ofApp::update(){
   if (grabber.isFrameNew()){
     // Do something with pixels from the grabber.
   }*/
+  
+  //fx switch with key bind
+	fx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
+	fx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= ofGetKeyPressed('2');
+	fx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable		= ofGetKeyPressed('3');
+	fx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable		= ofGetKeyPressed('4');
+	fx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable	= ofGetKeyPressed('5');
+	fx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable		= ofGetKeyPressed('6');
+	fx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= ofGetKeyPressed('7');
+	fx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= ofGetKeyPressed('8');
+
+	//change uniform parameter
+	fx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->u_Volume = volume;
+  // //ofNoise(ofGetElapsedTimef())*5000.0*volume;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-  ofEnableBlendMode(OF_BLENDMODE_ADD);
+  //draw src buffer
+	original.begin();{
+		ofClear(0, 0, 0, 255);
+
+		ofSetColor(255);
+		//player.draw(0, 0, ofGetWidth(), ofGetHeight());
+    stripeFbo.draw(0, 0);
+	}original.end();
+
+
+	ofSetColor(255);
+	//draw original buffer
+	original.draw(0, 0);
+
+	//apply active Effects
+	fx.applyFx();
+
+	//draw applied buffer
+	original.draw(512, 0);
+
+  /*ofEnableBlendMode(OF_BLENDMODE_ADD);
   
   ofSetColor(255, 255-playerAlpha);
   stripeFbo.draw(0, 0);
   
+  
   ofSetColor (255, playerAlpha);
   player.draw(0, 0, ofGetWidth(), ofGetHeight());
   
-  ofEnableAlphaBlending();
+  ofEnableAlphaBlending();*/
+  
   
   gui.draw();
 }
