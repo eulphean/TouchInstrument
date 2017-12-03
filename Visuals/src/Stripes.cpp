@@ -3,19 +3,21 @@
 
 void Stripes::setup(int type) {
   stripeType = type;
-  lines = 400;
   offset = 10;
-  lineHeight = 100;
-  phase = 0;
+  rotation = 3;
 }
 
-void Stripes::update() {
+void Stripes::update(float newOffset, float newRotation) {
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
   float band = CommonFFT::instance().fft.getLoudBand();
   float maxVol = CommonFFT::instance().fft.getSmoothedUnScaledLoudestValue();
   
   elapsedTime = ofGetElapsedTimef();
   scale = ofSignedNoise(elapsedTime) * maxVol/10;
+  
+  // Update values from Sliders.
+  offset = newOffset;
+  rotation = newRotation;
 }
 
 void Stripes::draw() {
@@ -40,7 +42,7 @@ void Stripes::stripeZero() {
       for (int x = -lines; x <= lines; x++) {
         ofPushMatrix();
           ofTranslate(x * offset, 0);
-          ofRotateZDeg(x * 3);
+          ofRotateZDeg(x * -5);
           ofScale(scale, scale);
         
           int color = ofMap(sin(elapsedTime), -1, 1, 0, 255);

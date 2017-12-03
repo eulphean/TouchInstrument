@@ -12,6 +12,13 @@ void ofApp::setup(){
   // Setup stripes
   stripeOne.setup(0);
   
+  gui.setup();
+  
+  // Stripe mixer
+  stripeMixer.setup("Stripes");
+  stripeMixer.add(offset.setup("offset", 10, 0, 50));
+  stripeMixer.add(rotation.setup("rotation", 3, -10, 10));
+  
   /*ofLoadImage (img, "prussik.jpg");
   player.loadMovie("ableton.mov");
   grabber.setup(ofGetWidth(), ofGetHeight());
@@ -22,15 +29,17 @@ void ofApp::setup(){
   mixer.setup("Mixer");
   mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
   mixer.add(playerAlpha.setup("video", 200.0, 0.0, 255.0));
-  mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));*/
-  gui.add(&mixer);
+  mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));
+  gui.add(&mixer);*/
+  
+  gui.add(&stripeMixer);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   // Update fft.
   CommonFFT::instance().fft.update();
-  stripeOne.update();
+  stripeOne.update(offset, rotation);
   
   /*player.update();
   grabber.update();

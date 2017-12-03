@@ -4,26 +4,26 @@
 
 class Stripes {
   public:
-    glm::vec2 center;
-    
     void setup(int type);
-    void update();
+    void update(float offset, float rotation);
     void draw();
-    
-    void stripeZero();
-    void stripeOne();
-    
+  
+    glm::vec2 center;
+  
     // 0 or 1
     int stripeType;
-    
-    int lines;
-    int offset;
-    int lineHeight;
-    int scaleFactor;
-    float rotationAngle;
-    
+    void stripeZero();
+    void stripeOne();
+  
+    // Const variables.
+    const int lines = 400;
+    const int lineHeight = 100;
+  
+    // Slider variables.
+    float offset;
+    float rotation;
+  
+    // FFT/Time modified variables.
     float scale;
     float elapsedTime;
-  
-    float phase;
 };

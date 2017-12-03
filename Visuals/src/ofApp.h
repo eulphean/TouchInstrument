@@ -20,6 +20,9 @@ class ofApp : public ofBaseApp{
     ofxGuiGroup mixer;
     ofxFloatSlider imageAlpha, playerAlpha, grabberAlpha;
   
+    ofxGuiGroup stripeMixer;
+    ofxFloatSlider offset, rotation;
+  
     // Visuals
     Stripes stripeOne;
 };
