@@ -1,37 +1,56 @@
 #include "Stripes.h"
 #include "CommonFFT.h"
 
-void Stripes::setup(int type) {
-  stripeType = type;
+void Stripes::setup() {
   offset = 10;
   rotation = 3;
+  ofEnableAlphaBlending();
+  
+  //fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F);
+  //fbo.begin();
+    //  ofBackground(0);
+  //fbo.end();
 }
 
-void Stripes::update(float newOffset, float newRotation) {
+void Stripes::update(float newOffset, float newRotation, float newBlend) {
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
   float band = CommonFFT::instance().fft.getLoudBand();
   float maxVol = CommonFFT::instance().fft.getSmoothedUnScaledLoudestValue();
   
   elapsedTime = ofGetElapsedTimef();
-  scale = ofSignedNoise(elapsedTime) * maxVol/10;
+  scale = ofSignedNoise(elapsedTime) * maxVol;
   
   // Update values from Sliders.
   offset = newOffset;
   rotation = newRotation;
+  blend = newBlend;
 }
 
 void Stripes::draw() {
-  switch (stripeType) {
-    case 0: {
+  /*ofPushStyle();
+    ofEnableAlphaBlending();
+      ofSetColor(0, 0, 0, 2);
+      ofFill();
+      ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
+      ofSetColor(50, 50, 255, 255);
+      ofEnableBlendMode(OF_BLENDMODE_ADD);
+      ofCircle(ofRandomWidth()/2, ofRandomHeight(), 50);
+    stripeZero();
+    fbo.begin();*/
+  
+  /*ofPushStyle();
+      ofEnableBlendMode(OF_BLENDMODE_ADD);
+      ofSetColor (255, blend1);
       stripeZero();
-      break;
-    }
-    
-    case 1: {
+      ofSetColor (255, blend2);
       stripeOne();
-      break;
-    }
-  }
+      ofEnableAlphaBlending();
+      ofEnableBlendMode(OF_BLENDMODE_ADD);
+  ofPopStyle();
+  */
+  stripeZero();
+  stripeOne();
+  
 }
 
 // Architectural stripes.
@@ -42,12 +61,12 @@ void Stripes::stripeZero() {
       for (int x = -lines; x <= lines; x++) {
         ofPushMatrix();
           ofTranslate(x * offset, 0);
-          ofRotateZDeg(x * -5);
+          ofRotateZDeg(x * rotation);
           ofScale(scale, scale);
         
           int color = ofMap(sin(elapsedTime), -1, 1, 0, 255);
           ofColor hue = ofColor::fromHsb(color, 255, 255);
-          ofSetColor(hue);
+          ofSetColor(hue, blend);
         
           ofSetLineWidth(2);
           ofDrawLine(x, -lineHeight, x, lineHeight);
@@ -71,9 +90,9 @@ void Stripes::stripeOne() {
       for (int x = 0; x < fftSpectrum.size(); x++) {
         ofPushMatrix();
           ofTranslate(x*offset, 0);
-          int color = ofMap(sin(elapsedTime), -1, 1, 0, 255);
+          int color = ofMap(cos(elapsedTime), -1, 1, 0, 255);
           ofColor hue = ofColor::fromHsb(color, 255, 255);
-          ofSetColor(hue);
+          ofSetColor(hue, 255-blend);
           
           // Since fft values are normalized, we range it from -0-1
           float stripeHeight = ofMap(fftSpectrum[x], 0, 1, 0, ofGetHeight() -50);
@@ -85,76 +104,3 @@ void Stripes::stripeOne() {
     ofPopMatrix();
   ofPopStyle();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-  ofSetLineWidth(2);
-  ofSetColor(ofColor::black);
-  for(int i =-lines; i<lines; i++){
-    // Stack the current coordinate system.
-    ofPushMatrix();
-    ofTranslate(i * 20, 0);
-
-    // Draw lines along the base curve.
-    //drawLine();
-    
-    // Reset the coordinate system.
-    ofPopMatrix();
-  }
-  
- 
-void Stripes::drawLine() {
-  // Potentially read this line from some real time data.
-  float length;
-  float hue;
-  
-  
-  if (useConstantLength) {
-    length = defaultLength;
-    hue = ofMap(ofGetHeight(), 0, ofGetHeight(), 0, 255);
-  } else {
-    length = ofRandom(0, ofGetHeight());
-    hue = ofMap(length, 0, ofGetHeight(), 0, 255);
-  }
-  
-  ofSetColor(ofColor::fromHsb(hue, 255, 255));
-  ofDrawLine(0, length, 0, -length);
-}
-*/

@@ -12,8 +12,7 @@ void ofApp::setup(){
   CommonFFT::instance().fft.setNumFFTBins(48);
   
   // Setup stripes
-  archStripe.setup(0);
-  fftStripe.setup(1);
+  stripeModule.setup();
   
   gui.setup();
   
@@ -21,19 +20,22 @@ void ofApp::setup(){
   stripeMixer.setup("Stripes");
   stripeMixer.add(offset.setup("offset", 10, 0, 50));
   stripeMixer.add(rotation.setup("rotation", 3, -10, 10));
+  //stripeMixer.add(rotation.setup("blend1", 0, 0, 255));
+  stripeMixer.add(blend.setup("blend", 0, 0, 255));
+  
   
   /*ofLoadImage (img, "prussik.jpg");
   player.loadMovie("ableton.mov");
   grabber.setup(ofGetWidth(), ofGetHeight());
-  player.play();
+  player.play();*/
   
-  // Setup GUI
-  gui.setup();
-  mixer.setup("Mixer");
+  // Setup
+  mixer.setup("Global Mixer");
   mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
-  mixer.add(playerAlpha.setup("video", 200.0, 0.0, 255.0));
-  mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));
-  gui.add(&mixer);*/
+  //mixer.add(playerAlpha.setup("video", 200.0, 0.0, 255.0));
+  //mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));
+  
+  gui.add(&mixer);
   
   gui.add(&stripeMixer);
 }
@@ -43,9 +45,7 @@ void ofApp::update(){
   // Update fft.
   CommonFFT::instance().fft.update();
   
-  archStripe.update(offset, rotation);
-  fftStripe.update(offset, rotation);
-  
+  stripeModule.update(offset, rotation, blend);
   /*player.update();
   grabber.update();
   if (grabber.isFrameNew()){
@@ -55,9 +55,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+glDepthFunc( GL_LEQUAL);
   gui.draw();
-  //stripeOne.draw();
-  fftStripe.draw();
+  
+  stripeModule.draw();
   
   /*ofEnableBlendMode(OF_BLENDMODE_ADD);
   

@@ -21,9 +21,9 @@ class ofApp : public ofBaseApp{
     ofxFloatSlider imageAlpha, playerAlpha, grabberAlpha;
   
     ofxGuiGroup stripeMixer;
-    ofxFloatSlider offset, rotation;
+    ofxFloatSlider offset, rotation, blend;
+
   
     // Visuals
-    Stripes archStripe;
-    Stripes fftStripe;
+    Stripes stripeModule;
 };

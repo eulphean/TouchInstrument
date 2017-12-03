@@ -4,14 +4,12 @@
 
 class Stripes {
   public:
-    void setup(int type);
-    void update(float offset, float rotation);
+    void setup();
+    void update(float offset, float rotation, float blend);
     void draw();
   
     glm::vec2 center;
-  
-    // 0 or 1
-    int stripeType;
+
     void stripeZero();
     void stripeOne();
   
@@ -22,8 +20,11 @@ class Stripes {
     // Slider variables.
     float offset;
     float rotation;
+    float blend;
   
     // FFT/Time modified variables.
     float scale;
     float elapsedTime;
+  
+    float stripeFbo;
 };
