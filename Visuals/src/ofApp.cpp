@@ -11,10 +11,11 @@ void ofApp::setup(){
   CommonFFT::instance().fft.setNormalize(true); // Give the volume range of each frequency between 0-1
   CommonFFT::instance().fft.setNumFFTBins(48);
   
-  // Setup stripes
-  stripeModule.setup();
+  // FBO setup for different modules getting drawn.
+  setupFbos();
   
   stripeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+  treeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
   
   gui.setup();
   
@@ -22,30 +23,26 @@ void ofApp::setup(){
   stripeMixer.setup("Stripes");
   stripeMixer.add(offset.setup("offset", 10, 0, 50));
   stripeMixer.add(rotation.setup("rotation", 3, -10, 10));
-  //stripeMixer.add(rotation.setup("blend1", 0, 0, 255));
   stripeMixer.add(blend.setup("blend", 0, 0, 255));
   
   player.load("ableton.mov");
   player.play();
-  /*ofLoadImage (img, "prussik.jpg");
-  grabber.setup(ofGetWidth(), ofGetHeight());
-  player.play();*/
   
   // Ksmr shader
   ksmrShader.setup("Ksmr shader");
   ksmrShader.add(volume.setup("Volume", 1.0, 0.0, 1.0));
   
+  // Global mixer.
   mixer.setup("Global Mixer");
-  //mixer.add(imageAlpha.setup("image", 100.0, 0.0, 255.0));
-  mixer.add(playerAlpha.setup("video", 0.0, 0.0, 255.0));
-  //mixer.add(grabberAlpha.setup("camera", 100.0, 0.0, 255.0));
+  mixer.add(treesAlpha.setup("Trees", 120.0, 0.0, 255.0));
+  mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
   
+  // Add GUI mixers.
   gui.add(&mixer);
-  
   gui.add(&stripeMixer);
-  
   gui.add(&ksmrShader);
   
+  // Setup effects.
   setting.width  = 512;
 	setting.height = 512;
 
@@ -55,25 +52,44 @@ void ofApp::setup(){
 	fx.setup(&original, setting);
 }
 
-//--------------------------------------------------------------
-void ofApp::update(){
-  // Update fft.
-  CommonFFT::instance().fft.update();
+void ofApp::setupFbos() {
+  // Setup trees.
+  treeModule.setup();
   
-  stripeModule.update(offset, rotation, blend);
-  
-  // Draw the module in fbo.
+  // Setup stripes
+  stripeModule.setup();
+}
+
+void ofApp::updateFbos() {
+  // Draw stripes.
   stripeFbo.begin();
     ofClear(255, 255, 255, 0);
     ofBackground(ofColor::black);
     stripeModule.draw();
   stripeFbo.end();
   
+  // Draw trees.
+  treeFbo.begin();
+    ofClear(255, 255, 255, 0);
+    ofBackground(ofColor::black);
+    treeModule.draw();
+  treeFbo.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+  // Update fft.
+  CommonFFT::instance().fft.update();
+  
+  // Update stripes.
+  stripeModule.update(offset, rotation, blend);
+  // Update trees.
+  treeModule.update();
+  
+  // Update FBOs to draw content.
+  updateFbos();
+  
   player.update();
-  /*grabber.update();
-  if (grabber.isFrameNew()){
-    // Do something with pixels from the grabber.
-  }*/
   
   //fx switch with key bind
 	fx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
@@ -86,20 +102,37 @@ void ofApp::update(){
 	fx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= ofGetKeyPressed('8');
 
 	//change uniform parameter
-	fx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->u_Volume = volume;
+	fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
   // //ofNoise(ofGetElapsedTimef())*5000.0*volume;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  
+  // KSMR effects
+  
+  // Alpha blend
+  // Noise
+  
+  ofEnableBlendMode(OF_BLENDMODE_ADD);
+
+  ofSetColor(255, stripesAlpha);
+  // Audio reactive Stripes.
+  stripeFbo.draw(0, 0);
+  
+  ofSetColor(255, treesAlpha);
+  // Tree with pixels getting unveiled from bottom to up.
+  treeFbo.draw(0, 0);
+  
+  ofEnableAlphaBlending();
 
   //draw src buffer
-	original.begin();{
+	/*original.begin();{
 		ofClear(0, 0, 0, 255);
 
-		ofSetColor(255);
+		ofSetColor(ofColor::red);
 		//player.draw(0, 0, ofGetWidth(), ofGetHeight());
-    stripeFbo.draw(0, 0);
+    //stripeFbo.draw(0, 0);
 	}original.end();
 
 
@@ -109,11 +142,13 @@ void ofApp::draw(){
 
 	//apply active Effects
 	fx.applyFx();
+  
+  	ofSetColor(ofColor::red);
 
 	//draw applied buffer
 	original.draw(512, 0);
 
-  /*ofEnableBlendMode(OF_BLENDMODE_ADD);
+  ofEnableBlendMode(OF_BLENDMODE_ADD);
   
   ofSetColor(255, 255-playerAlpha);
   stripeFbo.draw(0, 0);

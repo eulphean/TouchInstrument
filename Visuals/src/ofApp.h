@@ -5,6 +5,7 @@
 #include "ofxProcessFFT.h"
 #include "ofxKsmrFragmentFx.h"
 #include "Stripes.h"
+#include "Trees.h"
 
 class ofApp : public ofBaseApp{
 
@@ -13,27 +14,36 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
   
-    //ofImage img;
-    //ofVideoGrabber grabber;
+    void setupFbos();
+    void updateFbos();
   
     ofVideoPlayer player;
   
+    // Master mixer.
     ofxPanel gui;
     ofxGuiGroup mixer;
-    ofxFloatSlider imageAlpha, playerAlpha, grabberAlpha;
+    ofxFloatSlider treesAlpha, stripesAlpha;
   
+    // Stripes mixer.
     ofxGuiGroup stripeMixer;
     ofxFloatSlider offset, rotation, blend;
-    ofFbo stripeFbo;
   
+    // Effects mixer.
     ofxGuiGroup ksmrShader;
     ofxFloatSlider volume;
     
-    // Visuals
+    // -------- Visuals -----------
+  
+    // Stripes.
     Stripes stripeModule;
+    // Trees.
+    Trees treeModule;
+  
+    // FBOs
+    ofFbo stripeFbo;
+    ofFbo treeFbo;
   
     ofFbo::Settings		setting;
     ofFbo				original;
     ofxKsmrFragmentFx	fx;
-    //ofImage				image;
 };
