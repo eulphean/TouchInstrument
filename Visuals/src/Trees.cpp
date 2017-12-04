@@ -18,23 +18,45 @@ void Trees::setup() {
       }
     }
   }
+  
+  maskY = ofGetHeight();
+  
+  // Mask fbo's height will change with time.
+  drawFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+  maskFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 }
 
 void Trees::update() {
+  // MaskY should decrease over time.
+  maskY = ofMap(ofGetElapsedTimeMillis(), 0, endTimeForMask * 1000, ofGetHeight(), 0, true);
+  
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
+  
+  drawFbo.begin();
+    ofClear(0, 0, 0, 0);
+    int w = img.getWidth();
+    ofPushMatrix();
+      ofTranslate(center.x - w, 0);
+      // TODO: Set scale for Apple TV
+      ofScale(1, 1.1);
+      drawMesh();
+    ofPopMatrix();
+  drawFbo.end();
+  
+  maskFbo.begin();
+    ofClear(0, 0, 0, 0);
+    ofPushStyle();
+      ofSetColor(255);
+      ofDrawRectangle(0, maskY, ofGetWidth(), ofGetHeight());
+    ofPopStyle();
+  maskFbo.end();
+  
+  drawFbo.getTexture().setAlphaMask(maskFbo.getTexture());
 }
 
 void Trees::draw() {
   // Since we are rescaling the vertices.
-  int w = img.getWidth();
-  int h = img.getHeight();
-  
-  ofPushMatrix();
-    ofTranslate(center.x - w, 0);
-    // TODO: Set scale for Apple TV
-    ofScale(1, 1.1);
-    drawMesh();
-  ofPopMatrix();
+  drawFbo.draw(0, 0);
 }
 
 void Trees::drawMesh() {
