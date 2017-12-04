@@ -77,5 +77,5 @@ void Trees::drawMesh() {
 
 void Trees::resetMaskPosition() {
   maskY = ofGetHeight();
-  ofResetElapsedTimeCounter();6
+  ofResetElapsedTimeCounter();
 }

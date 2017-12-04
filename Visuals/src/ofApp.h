@@ -6,6 +6,9 @@
 #include "ofxKsmrFragmentFx.h"
 #include "Stripes.h"
 #include "Trees.h"
+#include "ofxOsc.h"
+
+#define PORT 12345
 
 class ofApp : public ofBaseApp{
 
@@ -18,6 +21,8 @@ class ofApp : public ofBaseApp{
     void updateFbos();
     void drawNoiseFbo();
     void keyPressed(int key);
+    void processOSCMessages();
+    void updateKsmrFx();
   
     // Master mixer.
     ofxPanel gui;
@@ -27,10 +32,6 @@ class ofApp : public ofBaseApp{
     // Stripes mixer.
     ofxGuiGroup stripeMixer;
     ofxFloatSlider offset, rotation, blend;
-  
-    // Effects mixer.
-    ofxGuiGroup noiseGroup;
-    ofxFloatSlider noiseVolume;
     
     // -------- Visuals -----------
   
@@ -51,4 +52,28 @@ class ofApp : public ofBaseApp{
   
     // Total FX.
     ofxKsmrFragmentFx totalFx;
+    bool enableNoise = false;
+    bool edgeOnTop = false;
+    bool fringe = false;
+    bool invert = false;
+    bool slantShift = false;
+    bool texChip = false;
+    bool vertNoise = false;
+    bool vertSlide = false;
+    bool water = false;
+  
+    float noiseVolume;
+    float edgeVolume;
+    float fringeVolume;
+    float invertVolume;
+    float slantVolume;
+    float texVolume;
+    float vertNoiseVolume;
+    float vertSlideVolume;
+    float waterVolume;
+    
+    // Touch OSC
+    ofxOscReceiver receiver;
+  
+    bool hideGui = false;
 };

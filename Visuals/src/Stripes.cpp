@@ -3,14 +3,7 @@
 
 void Stripes::setup() {
   offset = 10;
-  rotation = 3;
-  ofEnableAlphaBlending();
-  
-  //fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA32F);
-  //fbo.begin();
-    //  ofBackground(0);
-  //fbo.end();
-}
+  rotation = 3;}
 
 void Stripes::update(float newOffset, float newRotation, float newBlend) {
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
@@ -27,30 +20,8 @@ void Stripes::update(float newOffset, float newRotation, float newBlend) {
 }
 
 void Stripes::draw() {
-  /*ofPushStyle();
-    ofEnableAlphaBlending();
-      ofSetColor(0, 0, 0, 2);
-      ofFill();
-      ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
-      ofSetColor(50, 50, 255, 255);
-      ofEnableBlendMode(OF_BLENDMODE_ADD);
-      ofCircle(ofRandomWidth()/2, ofRandomHeight(), 50);
-    stripeZero();
-    fbo.begin();*/
-  
-  /*ofPushStyle();
-      ofEnableBlendMode(OF_BLENDMODE_ADD);
-      ofSetColor (255, blend1);
-      stripeZero();
-      ofSetColor (255, blend2);
-      stripeOne();
-      ofEnableAlphaBlending();
-      ofEnableBlendMode(OF_BLENDMODE_ADD);
-  ofPopStyle();
-  */
   stripeZero();
   stripeOne();
-  
 }
 
 // Architectural stripes.

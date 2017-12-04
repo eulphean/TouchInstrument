@@ -6,6 +6,9 @@ void ofApp::setup(){
   ofBackground(0);
   ofSetCircleResolution(80);
   
+  // Touch OSC setup.
+  receiver.setup(PORT);
+  
   // Setup GUI.
   gui.setup();
   
@@ -33,9 +36,9 @@ void ofApp::setup(){
   
   // Global mixer.
   mixer.setup("Global Mixer");
-  mixer.add(treesAlpha.setup("Trees", 80.0, 0.0, 255.0));
+  mixer.add(treesAlpha.setup("Trees", 120.0, 0.0, 255.0));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
-  mixer.add(noiseAlpha.setup("Noise", 100.0, 100.0, 255.0));
+  mixer.add(noiseAlpha.setup("Noise", 150.0, 80.0, 255.0));
   
   // Add GUI mixers.
   gui.add(&mixer);
@@ -104,6 +107,9 @@ void ofApp::updateFbos() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+  // Process Touch OSC messages.
+  processOSCMessages();
+  
   // Update fft.
   CommonFFT::instance().fft.update();
   
@@ -120,18 +126,35 @@ void ofApp::update(){
   noiseFx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = ofNoise(ofGetElapsedTimef())*5000.0;
   
   //fx switch with key bind
-	totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
-	totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= ofGetKeyPressed('2');
-	totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable		= ofGetKeyPressed('3');
-	totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable		= ofGetKeyPressed('4');
-	totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable	= ofGetKeyPressed('5');
-	totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable		= ofGetKeyPressed('6');
-	totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= ofGetKeyPressed('7');
-	totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= ofGetKeyPressed('8');
+	updateKsmrFx();
 
 	//change uniform parameter
 	//fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
   // //ofNoise(ofGetElapsedTimef())*5000.0*volume;*/
+}
+
+void ofApp::updateKsmrFx() {
+  // Enable/disable FX.
+  totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable = enableNoise;
+	totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= edgeOnTop;
+	totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable = fringe;
+	totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable = invert;
+	totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable = slantShift;
+	totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable	= texChip;
+	totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= vertNoise;
+	totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= vertSlide;
+  totalFx.getfxUnit(KSMR_FRAGFX_WATER)->bEnable	= water;
+  
+  // Uniform parameters
+  totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = noiseVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->u_Volume = edgeOnTop;
+  totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->u_Volume = fringeVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->u_Volume = invertVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->u_Volume = slantVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->u_Volume = texVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->u_Volume = vertNoiseVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->u_Volume = vertSlideVolume;
+  totalFx.getfxUnit(KSMR_FRAGFX_WATER)->u_Volume = waterVolume;
 }
 
 //--------------------------------------------------------------
@@ -141,7 +164,9 @@ void ofApp::draw(){
   totalFx.applyFx();
   totalFxFbo.draw(0, 0);
   
-  gui.draw();
+  if (!hideGui) {
+    gui.draw();
+  }
 }
 
 void ofApp::drawNoiseFbo() {
@@ -155,6 +180,122 @@ void ofApp::drawNoiseFbo() {
 void ofApp::keyPressed(int key) {
   if (key == 'a') {
     treeModule.resetMaskPosition();
+  }
+  if (key == 'b') {
+    hideGui = !hideGui;
+  }
+}
+
+void ofApp::processOSCMessages() {
+    
+  while(receiver.hasWaitingMessages()){
+      // get the next message
+      ofxOscMessage m;
+      receiver.getNextMessage(m);
+    
+      // Stripes
+      if(m.getAddress() == "/Video/stripes/blend"){
+          float val = m.getArgAsFloat(0);
+          blend = ofMap(val, 0, 1, 0, 255, true);
+      }
+      else if(m.getAddress() == "/Video/stripes/offset"){
+          float val = m.getArgAsFloat(0);
+          offset = ofMap(val, 0, 1, 0, 50, true);
+      }
+      else if(m.getAddress() == "/Video/stripes/rotation"){
+          float val = m.getArgAsFloat(0);
+          rotation = ofMap(val, 0, 1, -10, 10, true);
+      } //Global Mixer
+      else if(m.getAddress() == "/Video/global/noise"){
+          float val = m.getArgAsFloat(0);
+          noiseAlpha = ofMap(val, 0, 1, 0, 255, true);
+      }
+      else if(m.getAddress() == "/Video/global/stripes"){
+          float val = m.getArgAsFloat(0);
+          stripesAlpha = ofMap(val, 0, 1, 0, 255, true);
+      }
+      else if(m.getAddress() == "/Video/global/tree"){
+          float val = m.getArgAsFloat(0);
+          treesAlpha = ofMap(val, 0, 1, 0, 255, true);
+      } // KSMR FX.
+      else if(m.getAddress() == "/Video/ksmr/noise"){
+          int val = m.getArgAsInt(0);
+          enableNoise = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/edge"){
+          int val = m.getArgAsInt(0);
+          edgeOnTop = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/fringe"){
+          int val = m.getArgAsInt(0);
+          fringe = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/invert"){
+          int val = m.getArgAsInt(0);
+          invert = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/slant"){
+          int val = m.getArgAsInt(0);
+          slantShift = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/tex"){
+          int val = m.getArgAsInt(0);
+          texChip = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/vertN"){
+          int val = m.getArgAsInt(0);
+          vertNoise = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/vertS"){
+          int val = m.getArgAsInt(0);
+          vertSlide = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/water"){
+          int val = m.getArgAsInt(0);
+          water = val;
+      } // Uniform volume parameters for
+      else if(m.getAddress() == "/Video/ksmr/noiseVolume"){
+          float val = m.getArgAsFloat(0);
+          noiseVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/edgeVolume"){
+          float val = m.getArgAsFloat(0);
+          edgeVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/fringeVolume"){
+          float val = m.getArgAsFloat(0);
+          fringeVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/invertVolume"){
+          float val = m.getArgAsFloat(0);
+          invertVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/slantVolume"){
+          float val = m.getArgAsFloat(0);
+          slantVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/texVolume"){
+          float val = m.getArgAsFloat(0);
+          texVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/vertnVolume"){
+          float val = m.getArgAsFloat(0);
+          vertNoiseVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/vertsVolume"){
+          float val = m.getArgAsFloat(0);
+          vertSlideVolume = val;
+      }
+      else if(m.getAddress() == "/Video/ksmr/waterVolume"){
+          float val = m.getArgAsFloat(0);
+          waterVolume = val;
+      }
+      else if(m.getAddress() == "/Video/reset"){
+          float val = m.getArgAsInt(0);
+          if (val) {
+            treeModule.resetMaskPosition();
+          }
+      }
   }
 }
 // Setup sliders to fade between different effects and sort of overlap them.
