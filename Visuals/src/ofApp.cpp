@@ -34,7 +34,7 @@ void ofApp::setup(){
   
   // Global mixer.
   mixer.setup("Global Mixer");
-  mixer.add(treesAlpha.setup("Trees", 120.0, 0.0, 255.0));
+  mixer.add(treesAlpha.setup("Trees", 80.0, 0.0, 255.0));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
   
   // Add GUI mixers.
@@ -110,8 +110,7 @@ void ofApp::update(){
 void ofApp::draw(){
   
   // KSMR effects
-  
-  // Alpha blend
+
   // Noise
   
   ofEnableBlendMode(OF_BLENDMODE_ADD);

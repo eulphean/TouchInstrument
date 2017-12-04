@@ -12,7 +12,5 @@ class Trees {
     ofImage img;
     ofMesh mesh;
     glm::vec2 center;
-  
-  
 };
 

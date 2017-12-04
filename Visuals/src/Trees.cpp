@@ -41,7 +41,7 @@ void Trees::drawMesh() {
   ofPushStyle();
     ofNoFill();
     ofSetColor(ofColor::white);
-
+  
     for (int i = 0; i < mesh.getVertices().size(); i++) {
       glm::vec2 point(mesh.getVertices()[i].x, mesh.getVertices()[i].y);
       ofPushMatrix();
