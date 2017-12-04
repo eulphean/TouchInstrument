@@ -6,6 +6,9 @@ void ofApp::setup(){
   ofBackground(0);
   ofSetCircleResolution(80);
   
+  // Setup GUI.
+  gui.setup();
+  
   // Setup fft.
   CommonFFT::instance().fft.setup();
   CommonFFT::instance().fft.setNormalize(true); // Give the volume range of each frequency between 0-1
@@ -14,10 +17,11 @@ void ofApp::setup(){
   // FBO setup for different modules getting drawn.
   setupFbos();
   
-  stripeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-  treeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
-  
-  gui.setup();
+  // Setup modules.
+  stripeModule.setup();
+  treeModule.setup();
+  // Setup noiseFbo
+  noiseFx.setup(&emptyNoiseFbo, settings);
   
   // Stripe mixer
   stripeMixer.setup("Stripes");
@@ -25,39 +29,27 @@ void ofApp::setup(){
   stripeMixer.add(rotation.setup("rotation", 3, -10, 10));
   stripeMixer.add(blend.setup("blend", 0, 0, 255));
   
-  player.load("ableton.mov");
-  player.play();
-  
-  // Ksmr shader
-  ksmrShader.setup("Ksmr shader");
-  ksmrShader.add(volume.setup("Volume", 1.0, 0.0, 1.0));
-  
   // Global mixer.
   mixer.setup("Global Mixer");
   mixer.add(treesAlpha.setup("Trees", 80.0, 0.0, 255.0));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
+  mixer.add(noiseAlpha.setup("Noise", 100.0, 100.0, 255.0));
   
   // Add GUI mixers.
   gui.add(&mixer);
   gui.add(&stripeMixer);
-  gui.add(&ksmrShader);
-  
-  // Setup effects.
-  setting.width  = 512;
-	setting.height = 512;
-
-	original.allocate(setting);
-
-	//ksmrFX setup
-	fx.setup(&original, setting);
 }
 
 void ofApp::setupFbos() {
-  // Setup trees.
-  treeModule.setup();
+  // FBO settings.
+  settings.width = ofGetWidth();
+  settings.height = ofGetHeight();
+  settings.internalformat = GL_RGBA;
   
-  // Setup stripes
-  stripeModule.setup();
+  // Allocate FBOs
+  stripeFbo.allocate(settings);
+  treeFbo.allocate(settings);
+  emptyNoiseFbo.allocate(settings);
 }
 
 void ofApp::updateFbos() {
@@ -74,6 +66,11 @@ void ofApp::updateFbos() {
     ofBackground(ofColor::black);
     treeModule.draw();
   treeFbo.end();
+  
+  // Empty noise fbo.
+  emptyNoiseFbo.begin();
+  	ofClear(0, 0, 0, 255);
+  emptyNoiseFbo.end();
 }
 
 //--------------------------------------------------------------
@@ -89,8 +86,11 @@ void ofApp::update(){
   // Update FBOs to draw content.
   updateFbos();
   
-  player.update();
+  // Setup noiseFx unit.
+  noiseFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable = true;
+  noiseFx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = ofNoise(ofGetElapsedTimef())*5000.0;
   
+  /*
   //fx switch with key bind
 	fx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
 	fx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= ofGetKeyPressed('2');
@@ -103,63 +103,39 @@ void ofApp::update(){
 
 	//change uniform parameter
 	fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
-  // //ofNoise(ofGetElapsedTimef())*5000.0*volume;
+  // //ofNoise(ofGetElapsedTimef())*5000.0*volume;*/
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
   
   // KSMR effects
-
-  // Noise
   
   ofEnableBlendMode(OF_BLENDMODE_ADD);
-
-  ofSetColor(255, stripesAlpha);
+  
+  // Noise.
+  ofSetColor(ofColor::red, noiseAlpha);
+  drawNoiseFbo();
+  
   // Audio reactive Stripes.
+  ofSetColor(255, stripesAlpha);
   stripeFbo.draw(0, 0);
   
-  ofSetColor(255, treesAlpha);
   // Tree with pixels getting unveiled from bottom to up.
+  ofSetColor(255, treesAlpha);
   treeFbo.draw(0, 0);
   
   ofEnableAlphaBlending();
-
-  //draw src buffer
-	/*original.begin();{
-		ofClear(0, 0, 0, 255);
-
-		ofSetColor(ofColor::red);
-		//player.draw(0, 0, ofGetWidth(), ofGetHeight());
-    //stripeFbo.draw(0, 0);
-	}original.end();
-
-
-	ofSetColor(255);
-	//draw original buffer
-	original.draw(0, 0);
-
-	//apply active Effects
-	fx.applyFx();
-  
-  	ofSetColor(ofColor::red);
-
-	//draw applied buffer
-	original.draw(512, 0);
-
-  ofEnableBlendMode(OF_BLENDMODE_ADD);
-  
-  ofSetColor(255, 255-playerAlpha);
-  stripeFbo.draw(0, 0);
-  
-  
-  ofSetColor (255, playerAlpha);
-  player.draw(0, 0, ofGetWidth(), ofGetHeight());
-  
-  ofEnableAlphaBlending();*/
-  
   
   gui.draw();
+}
+
+void ofApp::drawNoiseFbo() {
+  ofPushStyle();
+    ofDisableBlendMode();
+    noiseFx.applyFx();
+    emptyNoiseFbo.draw(0, 0);
+  ofPopStyle();
 }
 
 // Setup sliders to fade between different effects and sort of overlap them.

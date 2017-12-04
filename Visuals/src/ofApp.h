@@ -16,21 +16,20 @@ class ofApp : public ofBaseApp{
   
     void setupFbos();
     void updateFbos();
-  
-    ofVideoPlayer player;
+    void drawNoiseFbo();
   
     // Master mixer.
     ofxPanel gui;
     ofxGuiGroup mixer;
-    ofxFloatSlider treesAlpha, stripesAlpha;
+    ofxFloatSlider treesAlpha, stripesAlpha, noiseAlpha;
   
     // Stripes mixer.
     ofxGuiGroup stripeMixer;
     ofxFloatSlider offset, rotation, blend;
   
     // Effects mixer.
-    ofxGuiGroup ksmrShader;
-    ofxFloatSlider volume;
+    ofxGuiGroup noiseGroup;
+    ofxFloatSlider noiseVolume;
     
     // -------- Visuals -----------
   
@@ -40,10 +39,15 @@ class ofApp : public ofBaseApp{
     Trees treeModule;
   
     // FBOs
+    ofFbo::Settings settings;
     ofFbo stripeFbo;
     ofFbo treeFbo;
+    ofFbo emptyNoiseFbo;
   
-    ofFbo::Settings		setting;
-    ofFbo				original;
-    ofxKsmrFragmentFx	fx;
+    // Noise FX
+    ofxKsmrFragmentFx noiseFx;
+  
+    // KSMR
+    //ofFbo original;
+    //ofxKsmrFragmentFx	fx;
 };
