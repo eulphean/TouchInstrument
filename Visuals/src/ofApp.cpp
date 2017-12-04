@@ -152,6 +152,11 @@ void ofApp::drawNoiseFbo() {
   ofPopStyle();
 }
 
+void ofApp::keyPressed(int key) {
+  if (key == 'a') {
+    treeModule.resetMaskPosition();
+  }
+}
 // Setup sliders to fade between different effects and sort of overlap them.
 // Effects should affected by sound
 // Or by X-Y pad that I will setup in the Touch OSC interface.

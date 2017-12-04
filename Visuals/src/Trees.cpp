@@ -74,3 +74,8 @@ void Trees::drawMesh() {
     }
   ofPopStyle();
 }
+
+void Trees::resetMaskPosition() {
+  maskY = ofGetHeight();
+  ofResetElapsedTimeCounter();6
+}

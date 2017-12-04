@@ -8,6 +8,7 @@ class Trees {
     void update();
     void draw();
     void drawMesh();
+    void resetMaskPosition();
   
     ofImage img;
     ofMesh mesh;
@@ -17,6 +18,6 @@ class Trees {
     ofFbo maskFbo;
   
     int maskY;
-    const int endTimeForMask = 60; // 60 seconds.
+    const int endTimeForMask = 120; // 60 seconds.
 };
 

@@ -17,6 +17,7 @@ class ofApp : public ofBaseApp{
     void setupFbos();
     void updateFbos();
     void drawNoiseFbo();
+    void keyPressed(int key);
   
     // Master mixer.
     ofxPanel gui;
@@ -50,8 +51,4 @@ class ofApp : public ofBaseApp{
   
     // Total FX.
     ofxKsmrFragmentFx totalFx;
-  
-    // KSMR
-    //ofFbo original;
-    //ofxKsmrFragmentFx	fx;
 };
