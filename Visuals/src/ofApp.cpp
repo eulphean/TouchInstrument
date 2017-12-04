@@ -20,8 +20,10 @@ void ofApp::setup(){
   // Setup modules.
   stripeModule.setup();
   treeModule.setup();
-  // Setup noiseFbo
+  
+  // Setup FX
   noiseFx.setup(&emptyNoiseFbo, settings);
+  totalFx.setup(&totalFxFbo, settings);
   
   // Stripe mixer
   stripeMixer.setup("Stripes");
@@ -50,6 +52,7 @@ void ofApp::setupFbos() {
   stripeFbo.allocate(settings);
   treeFbo.allocate(settings);
   emptyNoiseFbo.allocate(settings);
+  totalFxFbo.allocate(settings);
 }
 
 void ofApp::updateFbos() {
@@ -71,6 +74,32 @@ void ofApp::updateFbos() {
   emptyNoiseFbo.begin();
   	ofClear(0, 0, 0, 255);
   emptyNoiseFbo.end();
+  
+  // -----------PARENT FBO----------- where everything is drawn.
+  totalFxFbo.begin();
+    ofPushStyle();
+      ofClear(0, 0, 0, 255);
+      ofEnableBlendMode(OF_BLENDMODE_ADD);
+    
+      // Noise.
+      ofSetColor(ofColor::red, noiseAlpha);
+      drawNoiseFbo();
+      
+      // Audio reactive Stripes.
+      ofSetColor(255, stripesAlpha);
+      stripeFbo.draw(0, 0);
+      
+      // Tree with pixels getting unveiled from bottom to up.
+      ofSetColor(255, treesAlpha);
+      treeFbo.draw(0, 0);
+      
+      ofEnableAlphaBlending();
+    ofPopStyle();
+  
+    // Disable blend modes.
+    ofDisableBlendMode();
+    ofDisableAlphaBlending();
+  totalFxFbo.end();
 }
 
 //--------------------------------------------------------------
@@ -90,19 +119,18 @@ void ofApp::update(){
   noiseFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable = true;
   noiseFx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = ofNoise(ofGetElapsedTimef())*5000.0;
   
-  /*
   //fx switch with key bind
-	fx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
-	fx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= ofGetKeyPressed('2');
-	fx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable		= ofGetKeyPressed('3');
-	fx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable		= ofGetKeyPressed('4');
-	fx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable	= ofGetKeyPressed('5');
-	fx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable		= ofGetKeyPressed('6');
-	fx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= ofGetKeyPressed('7');
-	fx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= ofGetKeyPressed('8');
+	totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable		= ofGetKeyPressed('1');
+	totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= ofGetKeyPressed('2');
+	totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable		= ofGetKeyPressed('3');
+	totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable		= ofGetKeyPressed('4');
+	totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable	= ofGetKeyPressed('5');
+	totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable		= ofGetKeyPressed('6');
+	totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= ofGetKeyPressed('7');
+	totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= ofGetKeyPressed('8');
 
 	//change uniform parameter
-	fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
+	//fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
   // //ofNoise(ofGetElapsedTimef())*5000.0*volume;*/
 }
 
@@ -110,22 +138,8 @@ void ofApp::update(){
 void ofApp::draw(){
   
   // KSMR effects
-  
-  ofEnableBlendMode(OF_BLENDMODE_ADD);
-  
-  // Noise.
-  ofSetColor(ofColor::red, noiseAlpha);
-  drawNoiseFbo();
-  
-  // Audio reactive Stripes.
-  ofSetColor(255, stripesAlpha);
-  stripeFbo.draw(0, 0);
-  
-  // Tree with pixels getting unveiled from bottom to up.
-  ofSetColor(255, treesAlpha);
-  treeFbo.draw(0, 0);
-  
-  ofEnableAlphaBlending();
+  totalFx.applyFx();
+  totalFxFbo.draw(0, 0);
   
   gui.draw();
 }

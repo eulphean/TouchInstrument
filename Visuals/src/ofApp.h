@@ -43,9 +43,13 @@ class ofApp : public ofBaseApp{
     ofFbo stripeFbo;
     ofFbo treeFbo;
     ofFbo emptyNoiseFbo;
+    ofFbo totalFxFbo;
   
     // Noise FX
     ofxKsmrFragmentFx noiseFx;
+  
+    // Total FX.
+    ofxKsmrFragmentFx totalFx;
   
     // KSMR
     //ofFbo original;
