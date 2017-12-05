@@ -9,6 +9,10 @@ void ofApp::setup(){
   // Touch OSC setup.
   receiver.setup(PORT);
   
+  // Load clock video.
+  clockPlayer.load("clock.mov");
+  clockPlayer.play();
+  
   // Setup GUI.
   gui.setup();
   
@@ -37,6 +41,7 @@ void ofApp::setup(){
   // Global mixer.
   mixer.setup("Global Mixer");
   mixer.add(treesAlpha.setup("Trees", 120.0, 0.0, 255.0));
+  mixer.add(clockAlpha.setup("Clock", 0.0, 0.0, 255));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
   mixer.add(noiseAlpha.setup("Noise", 150.0, 80.0, 255.0));
   
@@ -55,6 +60,8 @@ void ofApp::setupFbos() {
   stripeFbo.allocate(settings);
   treeFbo.allocate(settings);
   emptyNoiseFbo.allocate(settings);
+  clockFbo.allocate(settings);
+  clockMaskFbo.allocate(settings);
   totalFxFbo.allocate(settings);
 }
 
@@ -65,6 +72,23 @@ void ofApp::updateFbos() {
     ofBackground(ofColor::black);
     stripeModule.draw();
   stripeFbo.end();
+  
+  // Update Clock player fbo and mask it.
+  clockFbo.begin();
+    ofClear(0, 0, 0, 0);
+    clockPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
+  clockFbo.end();
+  
+  clockMaskFbo.begin();
+    ofClear(0, 0, 0, 0);
+    ofPushStyle();
+    ofSetColor(255);
+    ofFill();
+    ofDrawRectangle(ofGetWidth()/2, ofGetHeight()/2, 100, 100);
+    ofPopStyle();
+  clockMaskFbo.end();
+  
+  clockFbo.getTexture().setAlphaMask(clockMaskFbo.getTexture());
   
   // Draw trees.
   treeFbo.begin();
@@ -91,6 +115,10 @@ void ofApp::updateFbos() {
       // Audio reactive Stripes.
       ofSetColor(255, stripesAlpha);
       stripeFbo.draw(0, 0);
+  
+      // Clock video.
+      ofSetColor(255, clockAlpha);
+      clockFbo.draw(0, 0);
       
       // Tree with pixels getting unveiled from bottom to up.
       ofSetColor(255, treesAlpha);
@@ -107,6 +135,9 @@ void ofApp::updateFbos() {
 
 //--------------------------------------------------------------
 void ofApp::update(){
+  // Update video.
+  clockPlayer.update();
+  
   // Process Touch OSC messages.
   processOSCMessages();
   
@@ -127,10 +158,6 @@ void ofApp::update(){
   
   //fx switch with key bind
 	updateKsmrFx();
-
-	//change uniform parameter
-	//fx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = volume;
-  // //ofNoise(ofGetElapsedTimef())*5000.0*volume;*/
 }
 
 void ofApp::updateKsmrFx() {
@@ -157,7 +184,7 @@ void ofApp::updateKsmrFx() {
   totalFx.getfxUnit(KSMR_FRAGFX_WATER)->u_Volume = waterVolume;
 }
 
-//--------------------------------------------------------------
+// Draw function - Extremely simple and straightforward.
 void ofApp::draw(){
   
   // KSMR effects

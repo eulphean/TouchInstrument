@@ -27,7 +27,7 @@ class ofApp : public ofBaseApp{
     // Master mixer.
     ofxPanel gui;
     ofxGuiGroup mixer;
-    ofxFloatSlider treesAlpha, stripesAlpha, noiseAlpha;
+    ofxFloatSlider treesAlpha, stripesAlpha, noiseAlpha, clockAlpha;
   
     // Stripes mixer.
     ofxGuiGroup stripeMixer;
@@ -52,6 +52,13 @@ class ofApp : public ofBaseApp{
   
     // Total FX.
     ofxKsmrFragmentFx totalFx;
+  
+    // Clock video.
+    ofVideoPlayer clockPlayer;
+    ofFbo clockFbo;
+    ofFbo clockMaskFbo;
+  
+  
     bool enableNoise = false;
     bool edgeOnTop = false;
     bool fringe = false;
