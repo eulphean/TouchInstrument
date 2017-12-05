@@ -4,6 +4,7 @@
 void Osc::setup() {
   // Setup OSC.
   receive.setup(PORT);
+  sender.setup(HOST, PORTTOSEND);
 }
 
 void Osc::update() {
