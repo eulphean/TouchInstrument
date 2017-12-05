@@ -40,8 +40,8 @@ void ofApp::setup(){
   
   // Global mixer.
   mixer.setup("Global Mixer");
-  mixer.add(treesAlpha.setup("Trees", 120.0, 0.0, 255.0));
-  mixer.add(clockAlpha.setup("Clock", 0.0, 0.0, 255));
+  mixer.add(treesAlpha.setup("Trees", 130.0, 0.0, 255.0));
+  mixer.add(clockAlpha.setup("Clock", 130.0, 0.0, 255));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
   mixer.add(noiseAlpha.setup("Noise", 150.0, 80.0, 255.0));
   
@@ -251,6 +251,10 @@ void ofApp::processOSCMessages() {
       else if(m.getAddress() == "/Video/global/stripes"){
           float val = m.getArgAsFloat(0);
           stripesAlpha = ofMap(val, 0, 1, 0, 255, true);
+      }
+      else if(m.getAddress() == "/Video/global/clock"){
+          float val = m.getArgAsFloat(0);
+          clockAlpha = ofMap(val, 0, 1, 0, 255, true);
       }
       else if(m.getAddress() == "/Video/global/tree"){
           float val = m.getArgAsFloat(0);

@@ -69,15 +69,15 @@ class ofApp : public ofBaseApp{
     bool vertSlide = false;
     bool water = false;
   
-    float noiseVolume;
-    float edgeVolume;
-    float fringeVolume;
-    float invertVolume;
-    float slantVolume;
-    float texVolume;
-    float vertNoiseVolume;
-    float vertSlideVolume;
-    float waterVolume;
+    float noiseVolume = 0.5;
+    float edgeVolume = 0.5;
+    float fringeVolume = 0.5;
+    float invertVolume = 0.5;
+    float slantVolume = 0.5;
+    float texVolume = 0.5;
+    float vertNoiseVolume = 0.5;
+    float vertSlideVolume = 0.5;
+    float waterVolume = 0.5;
     
     // Touch OSC
     ofxOscReceiver receiver;

@@ -3,7 +3,8 @@
 
 void Stripes::setup() {
   offset = 10;
-  rotation = 3;}
+  rotation = 3;
+}
 
 void Stripes::update(float newOffset, float newRotation, float newBlend) {
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
