@@ -73,7 +73,7 @@ void ofApp::updateFbos() {
     stripeModule.draw();
   stripeFbo.end();
   
-  // Update Clock player fbo and mask it.
+  // Mask and update clock FBO.
   clockFbo.begin();
     ofClear(0, 0, 0, 0);
     clockPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
@@ -82,9 +82,20 @@ void ofApp::updateFbos() {
   clockMaskFbo.begin();
     ofClear(0, 0, 0, 0);
     ofPushStyle();
-    ofSetColor(255);
     ofFill();
-    ofDrawRectangle(ofGetWidth()/2, ofGetHeight()/2, 100, 100);
+    //float midVal = CommonFFT::instance().fft.getMidVal();
+    //float radius = ofMap(midVal, 0, 1, 300, 350);
+    //ofDrawCircle(ofGetWidth()/2, ofGetHeight()/2, radius);
+    float start = ofGetWidth()/4;
+    float end = (ofGetWidth() * 3/4) + 50;
+    float xOffset = (end - start)/4;
+    float yOffset = (ofGetHeight())/4;
+    for (float i = start; i < end; i += xOffset) {
+      for (float j = 0; j < ofGetHeight(); j += yOffset) {
+        ofSetColor(255);
+        ofDrawRectangle(i, j, xOffset - 10, yOffset - 10);
+      }
+    }
     ofPopStyle();
   clockMaskFbo.end();
   
