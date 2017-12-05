@@ -29,7 +29,15 @@ void Trees::setup() {
 void Trees::update() {
   // MaskY should decrease over time.
   maskY = ofMap(ofGetElapsedTimeMillis(), 0, endTimeForMask * 1000, ofGetHeight(), 0, true);
+  float brightness = 255;
   
+  if (ofGetElapsedTimeMillis() >= endTimeForMask * 1000) {
+    // Put the mask back slowly and hide the thing completely.
+    float startTime = endTimeForMask*1000;
+    float endTime = startTime + endTimeForEnding*1000;
+    brightness = ofMap(ofGetElapsedTimeMillis(), startTime, endTime, 255, 0);
+  }
+
   center = glm::vec2(ofGetWidth()/2, ofGetHeight()/2);
   
   drawFbo.begin();
@@ -46,7 +54,7 @@ void Trees::update() {
   maskFbo.begin();
     ofClear(0, 0, 0, 0);
     ofPushStyle();
-      ofSetColor(255);
+      ofSetColor(brightness);
       ofDrawRectangle(0, maskY, ofGetWidth(), ofGetHeight());
     ofPopStyle();
   maskFbo.end();
@@ -61,11 +69,23 @@ void Trees::draw() {
 
 void Trees::drawMesh() {
   ofPushStyle();
-    ofNoFill();
     ofSetColor(ofColor::white);
+    float noiseX = 0;
+    float noiseY = 0;
   
     for (int i = 0; i < mesh.getVertices().size(); i++) {
-      glm::vec2 point(mesh.getVertices()[i].x, mesh.getVertices()[i].y);
+      if (ofGetElapsedTimeMillis() >= endTimeForMask * 1000) {
+        float startTime = endTimeForMask*1000;
+        float endTime = startTime + endTimeForEnding*1000;
+        float mappedRandomness = ofMap(ofGetElapsedTimeMillis(), startTime, endTime, 5, 450);
+        noiseX = ofMap(ofSignedNoise(ofRandom(200)), -1, 1, -mappedRandomness, mappedRandomness);
+        noiseY = ofMap(ofSignedNoise(ofRandom(100)), -1, 1, -mappedRandomness, mappedRandomness);
+        ofFill();
+      } else {
+        ofNoFill();
+      }
+      
+      glm::vec2 point(mesh.getVertices()[i].x + noiseX, mesh.getVertices()[i].y + noiseY);
       ofPushMatrix();
         ofTranslate(point);
         ofRotateZDeg(45);

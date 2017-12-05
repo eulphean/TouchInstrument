@@ -18,6 +18,7 @@ class Trees {
     ofFbo maskFbo;
   
     int maskY;
-    const int endTimeForMask = 60; // 60 seconds.
+    const int endTimeForMask = 10; // 60 seconds.
+    const int endTimeForEnding = 10;
 };
 
