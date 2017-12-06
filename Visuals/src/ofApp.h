@@ -58,26 +58,25 @@ class ofApp : public ofBaseApp{
     ofFbo clockFbo;
     ofFbo clockMaskFbo;
   
+    bool enableNoise;
+    bool edgeOnTop;
+    bool fringe;
+    bool invert;
+    bool slantShift;
+    bool texChip;
+    bool vertNoise;
+    bool vertSlide;
+    bool water;
   
-    bool enableNoise = false;
-    bool edgeOnTop = false;
-    bool fringe = false;
-    bool invert = false;
-    bool slantShift = false;
-    bool texChip = false;
-    bool vertNoise = false;
-    bool vertSlide = false;
-    bool water = false;
-  
-    float noiseVolume = 0.5;
-    float edgeVolume = 0.5;
-    float fringeVolume = 0.5;
-    float invertVolume = 0.5;
-    float slantVolume = 0.5;
-    float texVolume = 0.5;
-    float vertNoiseVolume = 0.5;
-    float vertSlideVolume = 0.5;
-    float waterVolume = 0.5;
+    float noiseVolume = 0.1;
+    float edgeVolume =0.1;
+    float fringeVolume = 0.1;
+    float invertVolume = 0.1;
+    float slantVolume =0.1;
+    float texVolume = 0.1;
+    float vertNoiseVolume = 0.1;
+    float vertSlideVolume = 0.1;
+    float waterVolume = 0.1;
     
     // Touch OSC
     ofxOscReceiver receiver;
