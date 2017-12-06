@@ -5,6 +5,7 @@
 void ofApp::setup(){
   ofBackground(0);
   ofSetCircleResolution(80);
+    ofSetVerticalSync(true);
   
   // Touch OSC setup.
   receiver.setup(PORT);
@@ -31,7 +32,21 @@ void ofApp::setup(){
   // Setup FX
   noiseFx.setup(&emptyNoiseFbo, settings);
   totalFx.setup(&totalFxFbo, settings);
+
+    enableNoise = false;
+    edgeOnTop = false;
+    fringe = false;
+    invert = false;
+    texChip = false;
+    vertNoise = false;
+    vertSlide = false;
+    water = false;
   
+    // Disable all FX units.
+    vector<ofxKsmrFragFXUnit*> fxUnits = totalFx.fxUnits;
+    for (int i  = 0; i < fxUnits.size(); i++) {
+        fxUnits[i] -> bEnable = false;
+    }
   // Stripe mixer
   stripeMixer.setup("Stripes");
   stripeMixer.add(offset.setup("offset", 10, 0, 50));
@@ -75,7 +90,7 @@ void ofApp::updateFbos() {
   
   // Mask and update clock FBO.
   clockFbo.begin();
-    ofClear(0, 0, 0, 0);
+    ofClear(255, 255, 255, 0);
     clockPlayer.draw(0, 0, ofGetWidth(), ofGetHeight());
   clockFbo.end();
   
@@ -83,16 +98,13 @@ void ofApp::updateFbos() {
     ofClear(0, 0, 0, 0);
     ofPushStyle();
     ofFill();
-    //float midVal = CommonFFT::instance().fft.getMidVal();
-    //float radius = ofMap(midVal, 0, 1, 300, 350);
-    //ofDrawCircle(ofGetWidth()/2, ofGetHeight()/2, radius);
     float start = /*ofGetWidth()/4;*/ 0;
     float end = /*(ofGetWidth() * 3/4) + 50;*/ ofGetWidth();
     float xOffset = (end - start)/8;
     float yOffset = (ofGetHeight())/4;
     for (float i = start; i < end; i += xOffset) {
       for (float j = 0; j < ofGetHeight(); j += yOffset) {
-        ofSetColor(255);
+        //ofSetColor(255);
         ofDrawRectangle(i, j, xOffset - 10, yOffset - 10);
       }
     }
@@ -200,8 +212,8 @@ void ofApp::updateKsmrFx() {
 void ofApp::draw(){
   
   // KSMR effects
-  totalFx.applyFx();
-  totalFxFbo.draw(0, 0);
+    totalFx.applyFx();
+    totalFxFbo.draw(0, 0);
   
   if (!hideGui) {
     gui.draw();
@@ -303,7 +315,7 @@ void ofApp::processOSCMessages() {
       }
       else if(m.getAddress() == "/Video/ksmr/edgeVolume"){
           float val = m.getArgAsFloat(0);
-          edgeVolume = val;
+          edgeVolume = ofMap(val, 0, 1, 0, 0.5, true);
       }
       else if(m.getAddress() == "/Video/ksmr/fringeVolume"){
           float val = m.getArgAsFloat(0);
@@ -311,27 +323,27 @@ void ofApp::processOSCMessages() {
       }
       else if(m.getAddress() == "/Video/ksmr/invertVolume"){
           float val = m.getArgAsFloat(0);
-          invertVolume = val;
+          invertVolume = ofMap(val, 0, 1, 0.5, 1.0, true);;
       }
       else if(m.getAddress() == "/Video/ksmr/slantVolume"){
           float val = m.getArgAsFloat(0);
-          slantVolume = val;
+          slantVolume = ofMap(val, 0, 1, 0.5, 1, true);;
       }
       else if(m.getAddress() == "/Video/ksmr/texVolume"){
           float val = m.getArgAsFloat(0);
-          texVolume = val;
+          texVolume = ofMap(val, 0, 1, 0, 0.5, true);;
       }
       else if(m.getAddress() == "/Video/ksmr/vertnVolume"){
           float val = m.getArgAsFloat(0);
-          vertNoiseVolume = val;
+          vertNoiseVolume = ofMap(val, 0, 1, 0, 0.5, true);;
       }
       else if(m.getAddress() == "/Video/ksmr/vertsVolume"){
           float val = m.getArgAsFloat(0);
-          vertSlideVolume = val;
+          vertSlideVolume = ofMap(val, 0, 1, 0, 0.5, true);;
       }
       else if(m.getAddress() == "/Video/ksmr/waterVolume"){
           float val = m.getArgAsFloat(0);
-          waterVolume = val;
+          waterVolume = ofMap(val, 0, 1, 0, 0.5, true);;
       }
       else if(m.getAddress() == "/Video/reset"){
           float val = m.getArgAsInt(0);

@@ -44,9 +44,9 @@ void Trees::update() {
     ofClear(0, 0, 0, 0);
     int w = img.getWidth();
     ofPushMatrix();
-      ofTranslate(center.x - w - 185, 0);
+      ofTranslate(center.x - w - 185, 12);
       // TODO: Set scale for Apple TV
-      ofScale(1.5, 1.6);
+      ofScale(1.5, 1.5);
       drawMesh();
     ofPopMatrix();
   drawFbo.end();
@@ -69,7 +69,6 @@ void Trees::draw() {
 
 void Trees::drawMesh() {
   ofPushStyle();
-    ofSetColor(ofColor::white);
     float noiseX = 0;
     float noiseY = 0;
   
@@ -77,14 +76,13 @@ void Trees::drawMesh() {
       if (ofGetElapsedTimeMillis() >= endTimeForMask * 1000) {
         float startTime = endTimeForMask*1000;
         float endTime = startTime + endTimeForEnding*1000;
-        float mappedRandomness = ofMap(ofGetElapsedTimeMillis(), startTime, endTime, 5, 450);
+        float mappedRandomness = ofMap(ofGetElapsedTimeMillis(), startTime, endTime, 5, 400);
         noiseX = ofMap(ofSignedNoise(ofRandom(200)), -1, 1, -mappedRandomness, mappedRandomness);
-        noiseY = ofMap(ofSignedNoise(ofRandom(100)), -1, 1, -mappedRandomness, mappedRandomness);
-        ofFill();
-      } else {
-        ofNoFill();
+        noiseY = ofMap(ofSignedNoise(ofRandom(200)), -1, 1, -mappedRandomness, mappedRandomness);
       }
       
+      ofNoFill();
+      ofSetColor(ofColor::white);
       glm::vec2 point(mesh.getVertices()[i].x + noiseX, mesh.getVertices()[i].y + noiseY);
       ofPushMatrix();
         ofTranslate(point);
