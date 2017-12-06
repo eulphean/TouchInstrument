@@ -43,7 +43,7 @@ void ofApp::setup(){
   mixer.add(treesAlpha.setup("Trees", 130.0, 0.0, 255.0));
   mixer.add(clockAlpha.setup("Clock", 130.0, 0.0, 255));
   mixer.add(stripesAlpha.setup("Stripes", 0.0, 0.0, 255.0));
-  mixer.add(noiseAlpha.setup("Noise", 150.0, 80.0, 255.0));
+  mixer.add(noiseAlpha.setup("Noise", 80.0, 80.0, 255.0));
   
   // Add GUI mixers.
   gui.add(&mixer);
@@ -86,9 +86,9 @@ void ofApp::updateFbos() {
     //float midVal = CommonFFT::instance().fft.getMidVal();
     //float radius = ofMap(midVal, 0, 1, 300, 350);
     //ofDrawCircle(ofGetWidth()/2, ofGetHeight()/2, radius);
-    float start = ofGetWidth()/4;
-    float end = (ofGetWidth() * 3/4) + 50;
-    float xOffset = (end - start)/4;
+    float start = /*ofGetWidth()/4;*/ 0;
+    float end = /*(ofGetWidth() * 3/4) + 50;*/ ofGetWidth();
+    float xOffset = (end - start)/8;
     float yOffset = (ofGetHeight())/4;
     for (float i = start; i < end; i += xOffset) {
       for (float j = 0; j < ofGetHeight(); j += yOffset) {
@@ -173,15 +173,16 @@ void ofApp::update(){
 
 void ofApp::updateKsmrFx() {
   // Enable/disable FX.
-  totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable = enableNoise;
-	totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= edgeOnTop;
-	totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable = fringe;
-	totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable = invert;
-	totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable = slantShift;
-	totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable	= texChip;
-	totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= vertNoise;
-	totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= vertSlide;
-  totalFx.getfxUnit(KSMR_FRAGFX_WATER)->bEnable	= water;
+    totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->bEnable = enableNoise;
+    totalFx.getfxUnit(KSMR_FRAGFX_EDGEONTOP)->bEnable	= edgeOnTop;
+    totalFx.getfxUnit(KSMR_FRAGFX_FRINGE)->bEnable = fringe;
+    totalFx.getfxUnit(KSMR_FRAGFX_INVERT)->bEnable = invert;
+    totalFx.getfxUnit(KSMR_FRAGFX_SLANTSHIFT)->bEnable = slantShift;
+    totalFx.getfxUnit(KSMR_FRAGFX_TEXCHIP)->bEnable	= texChip;
+    totalFx.getfxUnit(KSMR_FRAGFX_VERTNOISE)->bEnable	= vertNoise;
+    totalFx.getfxUnit(KSMR_FRAGFX_VERTSLIDE)->bEnable	= vertSlide;
+    totalFx.getfxUnit(KSMR_FRAGFX_WATER)->bEnable	= water;
+
   
   // Uniform parameters
   totalFx.getfxUnit(KSMR_FRAGFX_NOISE)->u_Volume = noiseVolume;

@@ -44,9 +44,9 @@ void Trees::update() {
     ofClear(0, 0, 0, 0);
     int w = img.getWidth();
     ofPushMatrix();
-      ofTranslate(center.x - w, 0);
+      ofTranslate(center.x - w - 185, 0);
       // TODO: Set scale for Apple TV
-      ofScale(1, 1.1);
+      ofScale(1.5, 1.6);
       drawMesh();
     ofPopMatrix();
   drawFbo.end();
