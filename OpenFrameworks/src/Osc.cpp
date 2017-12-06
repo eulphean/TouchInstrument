@@ -141,7 +141,11 @@ void Osc::processVideoMessages(ofxOscMessage &m) {
   }
   else if(m.getAddress() == "/Video/global/tree"){
       sender.sendMessage(m);
-  } // KSMR FX.
+  }
+  else if(m.getAddress() == "/Video/global/clock"){
+      sender.sendMessage(m);
+  }
+   // KSMR FX.
   else if(m.getAddress() == "/Video/ksmr/noise"){
       sender.sendMessage(m);
   }

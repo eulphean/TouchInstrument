@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
-//#include "ofxMidi.h"
 #include "Osc.h"
 
 using namespace std;
@@ -22,8 +21,8 @@ class ofApp : public ofBaseApp{
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
-    const int sensorValMax = 400;
-    const int sensorValMin = 150;
+    const int sensorValMax = 200;
+    const int sensorValMin = 100;
     
     // An instance of the serial object. One instance is needed for each active
     // serial connection.
@@ -36,10 +35,6 @@ class ofApp : public ofBaseApp{
     unsigned int sensorVal2;
   
     ofxPanel gui;
-  
-    // Midi integration.
-//    ofxMidiOut midiOut;
-//    int channelMidiNote, channelControlChangeDishes, channelControlChangeRotary;
   
     // OSC
     Osc oscHandler;
