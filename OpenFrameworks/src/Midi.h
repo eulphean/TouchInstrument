@@ -12,6 +12,7 @@ class Midi {
     void sendMidiControlChangeRotary(int device, float val);
     void sendMidiControlChangeDishes(int device, int midiVal);
     void sendMidiNoteOn(int midiNote);
+    void sendMidiNoteOff(int midiNote);
     
     static Midi &instance();
     

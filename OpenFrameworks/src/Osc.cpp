@@ -26,99 +26,89 @@ void Osc::update() {
 }
 
 void Osc::processAudioMessages(ofxOscMessage &m) {
-      // Kick off Scene 1
-    if (m.getAddress() == "/Scenes/4/1") {
+    if (m.getAddress() == "/Audio/rgong/arm") {
+      Midi::instance().sendMidiNoteOn(0);
+    }
+  
+    if (m.getAddress() == "/Audio/rgong/rack") {
+      Midi::instance().sendMidiNoteOn(1);
+    }
+  
+    if (m.getAddress() == "/Audio/lgong/arm") {
+      Midi::instance().sendMidiNoteOn(2);
+    }
+  
+    if (m.getAddress() == "/Audio/play") {
+      Midi::instance().sendMidiNoteOn(3);
+    }
+  
+    if (m.getAddress() == "/Audio/stop") {
+      Midi::instance().sendMidiNoteOn(4);
+    }
+  
+    if (m.getAddress() == "/Audio/chimes") {
       int val = m.getArgAsInt(0);
       if (val == 1) {
-          Midi::instance().sendMidiNoteOn(0);
-//        currentScene = 1;
+        Midi::instance().sendMidiNoteOn(6);
+      } else {
+        Midi::instance().sendMidiNoteOn(7);
       }
     }
-    
-    // Kick off Scene 2
-    if (m.getAddress() == "/Scenes/4/2") {
-      int val = m.getArgAsInt(0);
-      if(val == 1) {
-          Midi::instance().sendMidiNoteOn(1);
-//        currentScene = 2;
-      }
-    }
-    
-    // Kick off Scene 3
-    if (m.getAddress() == "/Scenes/4/3") {
+  
+    if (m.getAddress() == "/Audio/arp") {
       int val = m.getArgAsInt(0);
       if (val == 1) {
-          Midi::instance().sendMidiNoteOn(2);
-//        currentScene = 3;
+        Midi::instance().sendMidiNoteOn(8);
+      } else {
+        Midi::instance().sendMidiNoteOn(9);
       }
     }
-    
-    // Kick off Scene 4
-    if (m.getAddress() == "/Scenes/4/4") {
+  
+    if (m.getAddress() == "/Audio/kick1") {
       int val = m.getArgAsInt(0);
       if (val == 1) {
-          Midi::instance().sendMidiNoteOn(3);
-//        currentScene = 4;
+        Midi::instance().sendMidiNoteOn(10);
+      } else {
+        Midi::instance().sendMidiNoteOn(11);
       }
     }
-    
-    // Kick off Scene 5
-    if (m.getAddress() == "/Scenes/4/5") {
+  
+    if (m.getAddress() == "/Audio/kick2") {
       int val = m.getArgAsInt(0);
       if (val == 1) {
-          Midi::instance().sendMidiNoteOn(4);
-//        currentScene = 5;
+        Midi::instance().sendMidiNoteOn(13);
+      } else {
+        Midi::instance().sendMidiNoteOn(14);
       }
     }
-    
-    // Kick off Scene 6
-    if (m.getAddress() == "/Scenes/4/6") {
+  
+    if (m.getAddress() == "/Audio/autosine") {
       int val = m.getArgAsInt(0);
       if (val == 1) {
-          Midi::instance().sendMidiNoteOn(5);
-//        currentScene = 6;
+        Midi::instance().sendMidiNoteOn(16);
+      } else {
+        Midi::instance().sendMidiNoteOn(17);
       }
     }
-    
-    // ------------------------ Rotary Knobs -----------------------
-    
-    // Left rotary.
-    if (m.getAddress() == "/RotaryLeft") {
+  
+    if (m.getAddress() == "/Audio/rgong/drive") {
       float val = m.getArgAsFloat(0);
       Midi::instance().sendMidiControlChangeRotary(0, val);
     }
-    
-    // Right rotary.
-    if (m.getAddress() == "/RotaryRight") {
+
+    if (m.getAddress() == "/Audio/rgong/frequency") {
       float val = m.getArgAsFloat(0);
       Midi::instance().sendMidiControlChangeRotary(1, val);
     }
-    
-    // ------------------------ Fader Knobs -----------------------
-    
-    // Fader 1
-    if (m.getAddress() == "/Scenes/fader1") {
-      int val = m.getArgAsInt(0);
-    }
-    
-    // Fader 2
-    if (m.getAddress() == "/Scenes/fader2") {
+  
+    if (m.getAddress() == "/Audio/arprate") {
       float val = m.getArgAsFloat(0);
+      Midi::instance().sendMidiControlChangeRotary(2, val);
     }
-    
-    // Fader 3
-    if (m.getAddress() == "/Scenes/fader3") {
+  
+    if (m.getAddress() == "/Audio/kicklength") {
       float val = m.getArgAsFloat(0);
-    }
-    
-    // Fader 4
-    if (m.getAddress() == "/Scenes/fader4") {
-      float val = m.getArgAsFloat(0);
-    }
-    
-    // Fader 5
-    if (m.getAddress() == "/Scenes/fader5") {
-      float val = m.getArgAsFloat(0);
+      Midi::instance().sendMidiControlChangeRotary(3, val);
     }
 }
 

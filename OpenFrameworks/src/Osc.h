@@ -3,7 +3,7 @@
 #include "ofxOsc.h"
 
 #define PORT 8000
-#define HOST "10.73.41.151" // Update this IP address to the IP of the other MAC.
+#define HOST "10.73.38.86" // Update this IP address to the IP of the other MAC.
 #define PORTTOSEND 12345
 
 class Osc {

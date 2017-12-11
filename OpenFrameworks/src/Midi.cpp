@@ -11,8 +11,10 @@ void Midi::setup() {
 // Scene selection.
 void Midi::sendMidiNoteOn(int midiNote) {
   midiOut.sendNoteOn(channelMidiNote, midiNote, 64);
-  // Print Midi channel and note associated with it.
-  ofLogNotice() << "<Channel, Note>:<" << channelMidiNote << ", " << midiNote << ">";
+}
+
+void Midi::sendMidiNoteOff(int midiNote) {
+  midiOut.sendNoteOff(channelMidiNote, midiNote, 64);
 }
 
 // Rotary button mapping.
@@ -31,6 +33,20 @@ void Midi::sendMidiControlChangeRotary(int device, float val) {
       case 1: {
         // Channel, control, midi value
         midiOut.sendControlChange(channelControlChangeRotary, 11, midiVal);
+        break;
+      }
+      
+      case 2: {
+        // override Midi val for Arprate
+        midiVal = ofMap(val, 0, 1, 48, 90);
+        // Channel, control, midi value
+        midiOut.sendControlChange(channelControlChangeRotary, 12, midiVal);
+        break;
+      }
+      
+      case 3: {
+        // Channel, control, midi value
+        midiOut.sendControlChange(channelControlChangeRotary, 13, midiVal);
         break;
       }
       
