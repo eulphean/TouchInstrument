@@ -27,6 +27,9 @@ void AudioPlayer::patch() {
     // Select the first sample by default.
     sampleIdx = 0;
     sampleIdx >> sampler.in_select();
+  
+    osc1.out_sine() * 0.5 >> amp >> engine.audio_out(0);
+                  amp >> engine.audio_out(1);
 
     //------------SETUPS AND START AUDIO-------------
     engine.listDevices();

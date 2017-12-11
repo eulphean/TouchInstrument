@@ -60,6 +60,8 @@ private:
     pdsp::Decimator  decimator;
     pdsp::DampedDelay delay;
   
+    pdsp::VAOscillator osc1;
+  
     void patch();
     // Get playhead position.
     float getMeterPosition();
