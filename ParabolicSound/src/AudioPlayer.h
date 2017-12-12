@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxPDSP.h"
 #include  "ofxGui.h"
+#include "TouchOscillator.h"
 
 enum State {
   playing = 0,
@@ -18,8 +19,6 @@ public:
     AudioPlayer( const AudioPlayer & other ) { patch(); }
   
     void update(float capRange);
-    // Update sound for the current audio effect.
-    void updateSound(float capRange);
     void addSample(string path);
   
     void setNextEffect();
@@ -29,6 +28,10 @@ public:
     void play();
     void pause();
     void stop();
+  
+    // Oscillators. 
+    void startOscillator();
+    void stopOscillator();
   
     State getPlaybackState();
     
@@ -40,6 +43,7 @@ private:
 
     const int totalEffects = 3;
     const int totalSamples = 1;
+    const float defaultOscillatorPitch = 45.0f;
   
     // PDSP parameters.
     ofxPDSPEngine engine;
@@ -60,10 +64,15 @@ private:
     pdsp::Decimator  decimator;
     pdsp::DampedDelay delay;
   
-    pdsp::VAOscillator osc1;
+    // Oscillators
+    TouchOscillator touchOsc;
+    ofxPDSPTrigger touchOscTrigger;
   
     void patch();
     // Get playhead position.
     float getMeterPosition();
+    // Update sound for the current audio effect.
+    void updateSample(float capRange);
+    void updateOscillator(float capRange);
 };   
     

@@ -85,5 +85,13 @@ void ofApp::keyPressed(int key) {
   if (key == 'b') {
     audioPlayer.setNextSample();
   }
+  
+  if (key == 'c') {
+    audioPlayer.startOscillator();
+  }
+  
+  if (key == 'd') {
+    audioPlayer.stopOscillator();
+  }
 }
 

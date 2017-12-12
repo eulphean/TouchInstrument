@@ -27,9 +27,12 @@ void AudioPlayer::patch() {
     // Select the first sample by default.
     sampleIdx = 0;
     sampleIdx >> sampler.in_select();
-  
-    osc1.out_sine() * 0.5 >> amp >> engine.audio_out(0);
-                  amp >> engine.audio_out(1);
+
+    // Setup sample oscillator
+    defaultOscillatorPitch >> touchOsc.in_pitch();
+    touchOscTrigger >> touchOsc.in_trig();
+    touchOsc.out_sin() * 0.5f >> engine.audio_out(0);
+    touchOsc.out_sin() * 0.5f >> engine.audio_out(1);
 
     //------------SETUPS AND START AUDIO-------------
     engine.listDevices();
@@ -39,7 +42,10 @@ void AudioPlayer::patch() {
 
 void AudioPlayer::update(float capRange) {
   // Update sound for the effect that's currently on.
-  updateSound(capRange);
+  updateSample(capRange);
+  
+  // Update oscillators
+  updateOscillator(capRange);
   
   // Check if sound needs to be looped.
   float meter_position = getMeterPosition();
@@ -57,7 +63,7 @@ void AudioPlayer::update(float capRange) {
   }
 }
 
-void AudioPlayer::updateSound(float capRange) {
+void AudioPlayer::updateSample(float capRange) {
     switch (currentEffect) {
       // Feedback
       case 0: {
@@ -110,7 +116,7 @@ void AudioPlayer::updateSound(float capRange) {
     }
 }
 
-void AudioPlayer::setNextEffect() {
+void AudioPlayer::setNextEffect() {  
   currentEffect++;
   currentEffect = currentEffect % totalEffects;
 }
@@ -166,4 +172,19 @@ void AudioPlayer::stop(){
 
 State AudioPlayer::getPlaybackState() {
   return sampleState;
+}
+
+
+// Oscillators.
+void AudioPlayer::startOscillator() {
+  touchOscTrigger.trigger(1.0f);
+}
+
+void AudioPlayer::stopOscillator() {
+  touchOscTrigger.off();
+}
+
+void AudioPlayer::updateOscillator(float capRange) {
+  float newPitch = ofMap(capRange, 0.0f, 1.0f, 45.0f, 85.0f);
+  newPitch >> touchOsc.in_pitch();
 }
