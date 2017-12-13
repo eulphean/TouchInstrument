@@ -3,20 +3,15 @@
 #include "ofxOsc.h"
 
 #define PORT 8000
-#define HOST "10.73.38.86" // Update this IP address to the IP of the other MAC.
-#define PORTTOSEND 12345
 
 class Osc {
   public:
     void setup();
     void update();
-    void processAudioMessages(ofxOscMessage &m);
-    void processVideoMessages(ofxOscMessage &m);
+    void processAudioSignals(ofxOscMessage &m);
+    void processOscillatorSignals(ofxOscMessage &m);
     
   private:
     // Touch OSC parameters.
     ofxOscReceiver receive;
-  
-    // To send OSC messages to another machine.
-    ofxOscSender sender;
 };
