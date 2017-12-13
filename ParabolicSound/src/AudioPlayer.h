@@ -51,8 +51,8 @@ public:
   
     // Oscillators
     void updateOscillators(float capRange);
-    //void addOscillatorEffect(OscillatorEffect effect);
-    //void removeOscillatorEffect(OscillatorEffect effect);
+    void addOscillatorEffect(OscillatorEffect effect);
+    void removeOscillatorEffect(OscillatorEffect effect);
     void setOscillatorGain(float oscVal);
   
     // Play, Pause, and Stop
@@ -77,8 +77,9 @@ private:
   
     // Oscillators
     vector<TouchOscillator> oscillators;
-    vector<OscillatorEffect> oscillatorEffects;
+    vector<OscillatorEffect> currentOscillatorEffects;
     vector<ofxPDSPTrigger> oscillatorTriggers;
+    pdsp::DampedDelay oscDelay;
   
     int sampleIdx;
 

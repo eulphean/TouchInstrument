@@ -27,6 +27,14 @@ void TouchOscillator::patch() {
     osc.out_sine() >> amp;
 }
 
+bool TouchOscillator::getIsOscOn() {
+  return isOn;
+}
+
+void TouchOscillator::setOscOn(bool flag) {
+  isOn = flag;
+}
+
 pdsp::Patchable& TouchOscillator::in_trig(){
     return in("trig");
 }

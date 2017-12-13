@@ -9,7 +9,6 @@ void AudioPlayer::patch() {
     // ADSR Trigger - Without this the sample wouldn't play.
     sampleTrig >> sampler >> amp;
     envGate    >> env.set(0.0f, 70.0f, 0.3f, 100.0f) >> amp.in_mod();
-    //env >> amp.in_mod();
   
     // Oscillator amp.
     // Turn on the amp right away. We will control the oscillators
@@ -78,22 +77,22 @@ void AudioPlayer::initOscillators() {
       switch (idx) {
         // Sine
         case 0: {
-          osc.out_sin() * 0.5f >> oscAmp >> engine.audio_out(0);
-                                  oscAmp >> engine.audio_out(1);
+          osc.out_sin() * 0.5f >> oscAmp >> oscDelay >> engine.audio_out(0);
+                                  oscAmp >> oscDelay >> engine.audio_out(1);
           break;
         }
         
         // Square
         case 1: {
-          osc.out_pulse() * 0.5f >> oscAmp >> engine.audio_out(0);
-                                    oscAmp >> engine.audio_out(1);
+          osc.out_pulse() * 0.5f >> oscAmp >> oscDelay >> engine.audio_out(0);
+                                    oscAmp >> oscDelay >> engine.audio_out(1);
           break;
         }
         
         // Triangle
         case 2: {
-          osc.out_triangle() * 0.02f >> oscAmp >> engine.audio_out(0);
-                                       oscAmp >> engine.audio_out(1);
+          osc.out_triangle() * 0.02f >> oscAmp >> oscDelay >> engine.audio_out(0);
+                                       oscAmp >> oscDelay >> engine.audio_out(1);
           break;
         }
         
@@ -112,6 +111,11 @@ void AudioPlayer::addAudioEffect(SampleEffect effect) {
 void AudioPlayer::removeAudioEffect(SampleEffect effect) {
   std::vector<SampleEffect>::iterator it = find(currentSampleEffects.begin(), currentSampleEffects.end(), effect);
   currentSampleEffects.erase(it);
+}
+
+void AudioPlayer::setAudioSampleGain(float oscVal) {
+  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
+  newGain >> amp.in_mod();
 }
 
 // Update audio if any effects are applied.
@@ -177,29 +181,35 @@ void AudioPlayer::updateSampleAudio(float capRange) {
 }
 
 void AudioPlayer::updateOscillator(float capRange) {
-//  if (currentOscillatorEffects.size() == 0) {
-//    // No effects in the collection, return.
-//    return;
-//  }
-//  
-//  // Loop through each sound effect and apply it on the sound.
-//  for (OscillatorEffect &effect : currentOscillatorEffects) {
-//    switch (effect) {
-//      case oPitch: {
-//        float newPitch = ofMap(capRange, 0.0f, 1.0f, 45.0f, 85.0f);
-//        newPitch >> touchOsc.in_pitch();
-//        break;
-//      }
-//      
-//      case oDelay: {
-//      
-//        break;
-//      }
-//      
-//      default:
-//        break;
-//    }
-//  }
+  if (currentOscillatorEffects.size() == 0) {
+    // No effects in the collection, return.
+    return;
+  }
+  
+  // Loop through each sound effect and apply it on the sound.
+  for (OscillatorEffect &effect : currentOscillatorEffects) {
+    switch (effect) {
+      case oPitch: {
+        float newPitch = ofMap(capRange, 0.0f, 1.0f, 45.0f, 85.0f);
+        
+        // Only update the pitch for the oscillators that are turned on.
+        for (TouchOscillator &osc : oscillators) {
+          if (osc.getIsOn()) {
+            newPitch >> osc.in_pitch();
+          }
+        }
+        break;
+      }
+      
+      case oDelay: {
+      
+        break;
+      }
+      
+      default:
+        break;
+    }
+  }
 }
 
 void AudioPlayer::setNextSample() {
@@ -259,21 +269,28 @@ State AudioPlayer::getPlaybackState() {
 void AudioPlayer::startOscillator(Oscillator osc) {
   int idx = static_cast<int>(osc);
   oscillatorTriggers[idx].trigger(1.0f);
+  // Turn on the oscillator.
+  oscillators[idx].setIsOscOn(true);
   cout << "OSC_amp " << oscAmp.meter_mod() << endl;
 }
 
 void AudioPlayer::stopOscillator(Oscillator osc) {
   int idx = static_cast<int>(osc);
+  // Turn off the oscillator off. 
+  oscillators[idx].setIsOscOn(false);
   oscillatorTriggers[idx].off();
 }
 
 void AudioPlayer::setOscillatorGain(float oscVal) {
   float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
   newGain >> oscAmp.in_mod();
-
 }
 
-void AudioPlayer::setAudioSampleGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
-  newGain >> amp.in_mod();
+void AudioPlayer::addOscillatorEffect(OscillatorEffect effect) {
+  currentOscillatorEffects.push_back(effect);
+}
+
+void AudioPlayer::removeOscillatorEffect(OscillatorEffect effect) {
+  std::vector<OscillatorEffect>::iterator it = find(currentOscillatorEffects.begin(), currentOscillatorEffects.end(), effect);
+  currentOscillatorEffects.erase(it);
 }

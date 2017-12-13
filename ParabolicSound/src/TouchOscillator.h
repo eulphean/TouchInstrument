@@ -22,6 +22,10 @@ class TouchOscillator : public pdsp::Patchable{
         pdsp::Patchable& out_saw();
         pdsp::Patchable& out_triangle();
         pdsp::Patchable& out_pulse();
+  
+        // Check to see if the oscillator is turned on.
+        bool getIsOscOn();
+        void setIsOscOn(bool flag);
     
     // Characteristics of this oscillator. 
     private:
@@ -30,4 +34,5 @@ class TouchOscillator : public pdsp::Patchable{
         pdsp::ADSR env;
         pdsp::CRSlew ampSlew;
         pdsp::CRSlew pitchSlew;
+        bool isOn = false;
 };
