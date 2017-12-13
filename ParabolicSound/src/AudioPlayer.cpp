@@ -114,7 +114,6 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
   currentSampleEffects.erase(it);
 }
 
-
 // Update audio if any effects are applied.
 void AudioPlayer::updateSampleAudio(float capRange) {
     // Don't do anything if no effect is applied. 
@@ -216,7 +215,6 @@ void AudioPlayer::setNextSample() {
   play();
 }
 
-
 float AudioPlayer::getMeterPosition() {
    return sampler.meter_position();
 }
@@ -256,7 +254,6 @@ void AudioPlayer::stop(){
 State AudioPlayer::getPlaybackState() {
   return sampleState;
 }
-
 
 // Oscillators.
 void AudioPlayer::startOscillator(Oscillator osc) {
