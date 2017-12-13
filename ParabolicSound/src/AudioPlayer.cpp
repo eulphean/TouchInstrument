@@ -8,14 +8,20 @@ void AudioPlayer::patch() {
   
     // ADSR Trigger - Without this the sample wouldn't play.
     sampleTrig >> sampler >> amp;
-    envGate    >> env >> amp.in_mod();
-    env >> amp.in_mod();
+    envGate    >> env.set(0.0f, 70.0f, 0.3f, 100.0f) >> amp.in_mod();
+    //env >> amp.in_mod();
+  
+    // Oscillator amp.
+    // Turn on the amp right away. We will control the oscillators
+    // by triggering individual of them on/off.
+    oscAmpTrigger >> oscAmpEnv.set(3.0f, 50.0f, 1.0f, 50.0f) >> oscAmp.in_mod();
+    oscAmpTrigger.trigger(1.0f);
   
     // Default frequency of the sample.
     decimator.set(20000);
   
     // Route the sampler to the output.
-    sampleTrig >> sampler >> amp >> delay >> decimator >> engine.audio_out(0);
+    sampleTrig >> sampler*2.0f >> amp >> delay >> decimator >> engine.audio_out(0);
                              amp >> delay >> decimator >> engine.audio_out(1);
   
     // Defaut state of the system.
@@ -66,25 +72,26 @@ void AudioPlayer::initOscillators() {
       // Default pitch and trigger.
       defaultOscillatorPitches[idx] >> osc.in_pitch();
       oscillatorTriggers[idx] >> osc.in_trig();
+      oscillatorTriggers[idx] >> amp.in_mod();
       switch (idx) {
         // Sine
         case 0: {
-          osc.out_sin() * 0.5f >> engine.audio_out(0);
-          osc.out_sin() * 0.5f >> engine.audio_out(1);
+          osc.out_sin() * 0.5f >> oscAmp >> engine.audio_out(0);
+                                  oscAmp >> engine.audio_out(1);
           break;
         }
         
         // Square
         case 1: {
-          osc.out_pulse() * 0.5f >> engine.audio_out(0);
-          osc.out_pulse() * 0.5f >> engine.audio_out(1);
+          osc.out_pulse() * 0.5f >> oscAmp >> engine.audio_out(0);
+                                    oscAmp >> engine.audio_out(1);
           break;
         }
         
         // Triangle
         case 2: {
-          osc.out_triangle() * 0.5f >> engine.audio_out(0);
-          osc.out_triangle() * 0.5f >> engine.audio_out(1);
+          osc.out_triangle() * 0.02f >> oscAmp >> engine.audio_out(0);
+                                       oscAmp >> engine.audio_out(1);
           break;
         }
         

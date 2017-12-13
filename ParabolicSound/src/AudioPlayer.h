@@ -89,15 +89,16 @@ private:
     pdsp::Sampler  sampler;
     vector<pdsp::SampleBuffer*> samples;
   
-    // Amp
+    // Sample amp
     pdsp::Amp  amp;
-  
-    pdsp::Amp oscillatorAmp;
-
-    // Triggers.
     pdsp::ADSR      env;
     ofxPDSPTrigger envGate;
     ofxPDSPTrigger sampleTrig;
+  
+    // Oscillator amp
+    pdsp::Amp oscAmp;
+    pdsp::ADSR oscAmpEnv;
+    ofxPDSPTrigger oscAmpTrigger;
   
     // Effects.
     pdsp::Decimator  decimator;
