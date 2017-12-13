@@ -10,19 +10,16 @@ void ofApp::setup() {
     group.add(capRange.set( "range", 0.0f, 0.0f, 1.0f)); // Virtual mapping the capacity range after filtering.
     gui.add(group);
   
-    // TODO: Add more samples.
-    audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/1.wav");
-    audioPlayer.play();
+    // Setup OSC.
+    oscHandler.setup();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     gui.draw();
   
-    // Update audioPlayer slider value. TODO. Get this from the metal
-    // dish sensor values and call update. 
-    float capVal = capRange.get();
-    audioPlayer.update(capVal);
+    // Update OSC. 
+    oscHandler.update();
   
     // As long as there is serial data available to read, repeat.
     while (serial.available() > 0)
@@ -75,23 +72,5 @@ void ofApp::update(){
 
 void ofApp::draw(){
   gui.draw();
-}
-
-void ofApp::keyPressed(int key) {
-  if (key == 'a') {
-    audioPlayer.setNextEffect();
-  }
-  
-  if (key == 'b') {
-    audioPlayer.setNextSample();
-  }
-  
-  if (key == 'c') {
-    audioPlayer.startOscillator();
-  }
-  
-  if (key == 'd') {
-    audioPlayer.stopOscillator();
-  }
 }
 

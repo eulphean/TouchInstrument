@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "AudioPlayer.h"
+#include "Osc.h"
 
 using namespace std;
 
@@ -11,7 +12,6 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-    void keyPressed(int key);
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
@@ -33,6 +33,6 @@ class ofApp : public ofBaseApp{
     ofxPDSPValue capRange;
     ofParameterGroup  group;
   
-    // Audio player
-    AudioPlayer audioPlayer;
+    // Osc
+    Osc oscHandler;
 };

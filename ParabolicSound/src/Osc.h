@@ -1,6 +1,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxOsc.h"
+#include "AudioPlayer.h"
 
 #define PORT 8000
 
@@ -14,4 +15,6 @@ class Osc {
   private:
     // Touch OSC parameters.
     ofxOscReceiver receive;
+  
+    AudioPlayer audioPlayer;
 };

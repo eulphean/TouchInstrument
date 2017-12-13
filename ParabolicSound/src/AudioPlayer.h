@@ -12,17 +12,48 @@ enum State {
   stopped
 };
 
+// Sampler effects.
+enum SampleEffect {
+  sDelay = 0,
+  sPitch,
+  sDecimation
+};
+
+// Oscillator effects.
+enum OscillatorEffect {
+  oPitch = 0,
+  oDelay
+};
+
+enum Oscillator {
+  sine = 0,
+  square,
+  triangle
+};
+
 class AudioPlayer : public pdsp::Patchable {
     
 public:
     AudioPlayer() { patch(); } 
     AudioPlayer( const AudioPlayer & other ) { patch(); }
   
+    // Uber update method to do any sort of updates of oscillators and audio samples. 
     void update(float capRange);
+  
     void addSample(string path);
   
-    void setNextEffect();
+    // Update sample audio if any effects are applied.
+    void addAudioEffect(SampleEffect effect);
+    void removeAudioEffect(SampleEffect effect);
+  
     void setNextSample();
+  
+    // Oscillators
+    void updateOscillators(float capRange);
+    //void addOscillator();
+    //void removeOscillator();
+    //void addOscillatorEffect(OscillatorEffect effect);
+    //void removeOscillatorEffect(OscillatorEffect effect);
   
     // Play, Pause, and Stop
     void play();
@@ -30,21 +61,27 @@ public:
     void stop();
   
     // Oscillators. 
-    void startOscillator();
-    void stopOscillator();
+    void startOscillator(Oscillator osc);
+    void stopOscillator(Oscillator osc);
   
     State getPlaybackState();
     
 private:
-    // State of the system.
-    State sampleState;
-  
-    int currentEffect, sampleIdx;
-
-    const int totalEffects = 3;
     const int totalSamples = 1;
     const float defaultOscillatorPitch = 45.0f;
+    const int oscillatorCount = 3;
+
+    // Samples
+    State sampleState;
+    vector<SampleEffect> currentSampleEffects;
   
+    // Oscillators
+    vector<TouchOscillator> oscillators;
+    vector<OscillatorEffect> oscillatorEffects;
+    vector<ofxPDSPTrigger> oscillatorTriggers;
+  
+    int sampleIdx;
+
     // PDSP parameters.
     ofxPDSPEngine engine;
   
@@ -54,6 +91,8 @@ private:
   
     // Amp
     pdsp::Amp  amp;
+  
+    pdsp::Amp oscillatorAmp;
 
     // Triggers.
     pdsp::ADSR      env;
@@ -64,15 +103,14 @@ private:
     pdsp::Decimator  decimator;
     pdsp::DampedDelay delay;
   
-    // Oscillators
-    TouchOscillator touchOsc;
-    ofxPDSPTrigger touchOscTrigger;
-  
     void patch();
-    // Get playhead position.
+  
+    // Query for playhead position.
     float getMeterPosition();
-    // Update sound for the current audio effect.
-    void updateSample(float capRange);
+  
+    void updateSampleAudio(float capRange);
     void updateOscillator(float capRange);
+  
+    void initOscillators();
 };   
     

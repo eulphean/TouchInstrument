@@ -3,6 +3,9 @@
 void Osc::setup() {
   // Setup OSC.
   receive.setup(PORT);
+  
+  // Setup Audio Player.
+  audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/1.wav");
 }
 
 void Osc::update() {
@@ -19,20 +22,41 @@ void Osc::update() {
 }
 
 void Osc::processAudioSignals(ofxOscMessage &m){
+    // Play/pause a sample.
     if (m.getAddress() == "/Audio/playpause") {
-      // Do something.
+      int val = m.getArgAsInt(0);
+      if (val) {
+        audioPlayer.play();
+      } else {
+        audioPlayer.pause();
+      }
     }
   
     if (m.getAddress() == "/Audio/delay") {
-      // Do something.
+      int val = m.getArgAsInt(0);
+      if (val) {
+        audioPlayer.addAudioEffect(sDelay);
+      } else {
+        audioPlayer.removeAudioEffect(sDelay);
+      }
     }
   
     if (m.getAddress() == "/Audio/pitch") {
-      // Do something.
+      int val = m.getArgAsInt(0);
+      if (val) {
+        audioPlayer.addAudioEffect(sPitch);
+      } else {
+        audioPlayer.removeAudioEffect(sPitch);
+      }
     }
   
     if (m.getAddress() == "/Audio/decimation") {
-      // Do something.
+      int val = m.getArgAsInt(0);
+      if (val) {
+        audioPlayer.addAudioEffect(sDecimation);
+      } else {
+        audioPlayer.removeAudioEffect(sDecimation);
+      }
     }
   
     // Rotary knob float values. 
@@ -43,15 +67,30 @@ void Osc::processAudioSignals(ofxOscMessage &m){
 
 void Osc::processOscillatorSignals(ofxOscMessage &m) {
   if (m.getAddress() == "/Oscillator/sine") {
-      // Trigger sine
+    int val = m.getArgAsInt(0);
+    if (val) {
+      audioPlayer.startOscillator(sine);
+    } else {
+      audioPlayer.stopOscillator(sine);
     }
+  }
   
   if (m.getAddress() == "/Oscillator/square") {
-    // Trigger square.
+    int val = m.getArgAsInt(0);
+    if (val) {
+      audioPlayer.startOscillator(square);
+    } else {
+      audioPlayer.stopOscillator(square);
+    }
   }
 
   if (m.getAddress() == "/Oscillator/triangle") {
-    // Trigger triangle.
+    int val = m.getArgAsInt(0);
+    if (val) {
+      audioPlayer.startOscillator(triangle);
+    } else {
+      audioPlayer.stopOscillator(triangle);
+    }
   }
 
   if (m.getAddress() == "/Oscillator/effect/pitch") {
