@@ -7,8 +7,11 @@ void AudioPlayer::patch() {
     //--------PATCHING-------
   
     // ADSR Trigger - Without this the sample wouldn't play.
-    sampleTrig >> sampler >> amp;
-    envGate    >> env.set(0.0f, 70.0f, 0.3f, 100.0f) >> amp.in_mod();
+    sampleTrig >> sampler >> sampleGainAmp >> amp;
+    envGate >> env.set(0.0f, 70.0f, 0.3f, 100.0f) >> amp.in_mod();
+  
+    // Default gain is 1.0f. Let all the signal pass through this.
+    1.0f >> sampleGainAmp.in_mod();
   
     // Oscillator amp.
     // Turn on the amp right away. We will control the oscillators
@@ -16,13 +19,11 @@ void AudioPlayer::patch() {
     oscAmpTrigger >> oscAmpEnv.set(3.0f, 50.0f, 1.0f, 50.0f) >> oscAmp.in_mod();
     oscAmpTrigger.trigger(1.0f);
   
-    cout << amp.meter_mod() << ", " << oscAmp.meter_mod() << endl;
-  
     // Default frequency of the sample.
     decimator.set(20000);
   
     // Route the sampler to the output.
-    sampleTrig >> sampler*2.0f >> amp >> delay >> decimator >> engine.audio_out(0);
+    sampleTrig >> sampler * 2.0f >> amp >> delay >> decimator >> engine.audio_out(0);
                              amp >> delay >> decimator >> engine.audio_out(1);
   
     // Defaut state of the system.
@@ -92,7 +93,7 @@ void AudioPlayer::initOscillators() {
         // Triangle
         case 2: {
           osc.out_triangle() * 0.02f >> oscAmp >> oscDelay >> engine.audio_out(0);
-                                       oscAmp >> oscDelay >> engine.audio_out(1);
+                                        oscAmp >> oscDelay >> engine.audio_out(1);
           break;
         }
         
@@ -141,8 +142,8 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
 }
 
 void AudioPlayer::setAudioSampleGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
-  newGain >> amp.in_mod();
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 10.0f);
+  newGain >> sampleGainAmp.in_mod();
 }
 
 // Update audio if any effects are applied.
