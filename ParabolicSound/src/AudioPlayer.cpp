@@ -318,8 +318,8 @@ void AudioPlayer::removeOscillatorEffect(OscillatorEffect effect) {
       }
       
       case oDelay: {
-        newDelayTime >> oscDelay.in_time();
-        newFeedbackTime >> oscDelay.in_feedback();
+        0.0f >> delay.in_time();
+        0.0f >> delay.in_feedback();
         break;
       }
       
