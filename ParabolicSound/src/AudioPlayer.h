@@ -1,0 +1,78 @@
+
+#pragma once
+
+#include "ofMain.h"
+#include "ofxPDSP.h"
+#include  "ofxGui.h"
+#include "TouchOscillator.h"
+
+enum State {
+  playing = 0,
+  paused,
+  stopped
+};
+
+class AudioPlayer : public pdsp::Patchable {
+    
+public:
+    AudioPlayer() { patch(); } 
+    AudioPlayer( const AudioPlayer & other ) { patch(); }
+  
+    void update(float capRange);
+    void addSample(string path);
+  
+    void setNextEffect();
+    void setNextSample();
+  
+    // Play, Pause, and Stop
+    void play();
+    void pause();
+    void stop();
+  
+    // Oscillators. 
+    void startOscillator();
+    void stopOscillator();
+  
+    State getPlaybackState();
+    
+private:
+    // State of the system.
+    State sampleState;
+  
+    int currentEffect, sampleIdx;
+
+    const int totalEffects = 3;
+    const int totalSamples = 1;
+    const float defaultOscillatorPitch = 45.0f;
+  
+    // PDSP parameters.
+    ofxPDSPEngine engine;
+  
+    // Sampler
+    pdsp::Sampler  sampler;
+    vector<pdsp::SampleBuffer*> samples;
+  
+    // Amp
+    pdsp::Amp  amp;
+
+    // Triggers.
+    pdsp::ADSR      env;
+    ofxPDSPTrigger envGate;
+    ofxPDSPTrigger sampleTrig;
+  
+    // Effects.
+    pdsp::Decimator  decimator;
+    pdsp::DampedDelay delay;
+  
+    // Oscillators
+    TouchOscillator touchOsc;
+    ofxPDSPTrigger touchOscTrigger;
+  
+    void patch();
+    // Get playhead position.
+    float getMeterPosition();
+    // Update sound for the current audio effect.
+    void updateSample(float capRange);
+    void updateOscillator(float capRange);
+};   
+    

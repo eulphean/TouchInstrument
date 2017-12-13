@@ -1,0 +1,6 @@
+ofxAssimpModelLoader
+ofxGui
+ofxMidi
+ofxOsc
+ofxPDSP
+ofxSIMDFloats
