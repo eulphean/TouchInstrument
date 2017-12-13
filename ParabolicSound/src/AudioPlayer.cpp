@@ -63,15 +63,35 @@ void AudioPlayer::initOscillators() {
   
     int idx = 0;
     for (TouchOscillator &osc : oscillators) {
-      // Set default pitch.
-      defaultOscillatorPitch >> osc.in_pitch();
-      // Attach oscillator trigger.
+      // Default pitch and trigger.
+      defaultOscillatorPitches[idx] >> osc.in_pitch();
       oscillatorTriggers[idx] >> osc.in_trig();
-      
-      // Amp -> audio engine output.
-      osc * 0.5f >> oscillatorAmp >> engine.audio_out(0);
-                    oscillatorAmp >> engine.audio_out(1);
-      
+      switch (idx) {
+        // Sine
+        case 0: {
+          osc.out_sin() * 0.5f >> engine.audio_out(0);
+          osc.out_sin() * 0.5f >> engine.audio_out(1);
+          break;
+        }
+        
+        // Square
+        case 1: {
+          osc.out_pulse() * 0.5f >> engine.audio_out(0);
+          osc.out_pulse() * 0.5f >> engine.audio_out(1);
+          break;
+        }
+        
+        // Triangle
+        case 2: {
+          osc.out_triangle() * 0.5f >> engine.audio_out(0);
+          osc.out_triangle() * 0.5f >> engine.audio_out(1);
+          break;
+        }
+        
+        default: {
+          break;
+        }
+      }
       idx++;
     }
 }

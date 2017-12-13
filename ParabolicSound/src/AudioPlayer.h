@@ -68,7 +68,7 @@ public:
     
 private:
     const int totalSamples = 1;
-    const float defaultOscillatorPitch = 45.0f;
+    const vector<float> defaultOscillatorPitches = { 45.0f, 15.0f, 5.0f };
     const int oscillatorCount = 3;
 
     // Samples
