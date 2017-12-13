@@ -61,7 +61,8 @@ void Osc::processAudioSignals(ofxOscMessage &m){
   
     // Rotary knob float values. 
     if (m.getAddress() == "/Audio/gain") {
-      // Do something.
+      float val = m.getArgAsFloat(0);
+      audioPlayer.setAudioSampleGain(val);
     }
 }
 
@@ -103,7 +104,8 @@ void Osc::processOscillatorSignals(ofxOscMessage &m) {
   
   // Rotary knob. Float values
   if (m.getAddress() == "/Oscillator/gain") {
-    // Change delay.
+    float val = m.getArgAsFloat(0);
+    audioPlayer.setOscillatorGain(val);
   }
 }
 

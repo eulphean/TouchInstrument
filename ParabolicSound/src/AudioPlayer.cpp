@@ -17,6 +17,8 @@ void AudioPlayer::patch() {
     oscAmpTrigger >> oscAmpEnv.set(3.0f, 50.0f, 1.0f, 50.0f) >> oscAmp.in_mod();
     oscAmpTrigger.trigger(1.0f);
   
+    cout << amp.meter_mod() << ", " << oscAmp.meter_mod() << endl;
+  
     // Default frequency of the sample.
     decimator.set(20000);
   
@@ -232,6 +234,7 @@ void AudioPlayer::play() {
   } else if (sampleState == stopped) {
     envGate.trigger(1.0f);
     sampleTrig.trigger(1.0f);
+    cout << "Sample amp " << amp.meter_mod() << endl;
   }
   sampleState = playing;
 }
@@ -259,9 +262,21 @@ State AudioPlayer::getPlaybackState() {
 void AudioPlayer::startOscillator(Oscillator osc) {
   int idx = static_cast<int>(osc);
   oscillatorTriggers[idx].trigger(1.0f);
+  cout << "OSC_amp " << oscAmp.meter_mod() << endl;
 }
 
 void AudioPlayer::stopOscillator(Oscillator osc) {
   int idx = static_cast<int>(osc);
   oscillatorTriggers[idx].off();
+}
+
+void AudioPlayer::setOscillatorGain(float oscVal) {
+  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
+  newGain >> oscAmp.in_mod();
+
+}
+
+void AudioPlayer::setAudioSampleGain(float oscVal) {
+  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f);
+  newGain >> amp.in_mod();
 }

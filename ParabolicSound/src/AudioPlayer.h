@@ -45,15 +45,15 @@ public:
     // Update sample audio if any effects are applied.
     void addAudioEffect(SampleEffect effect);
     void removeAudioEffect(SampleEffect effect);
+    void setAudioSampleGain(float oscVal);
   
     void setNextSample();
   
     // Oscillators
     void updateOscillators(float capRange);
-    //void addOscillator();
-    //void removeOscillator();
     //void addOscillatorEffect(OscillatorEffect effect);
     //void removeOscillatorEffect(OscillatorEffect effect);
+    void setOscillatorGain(float oscVal);
   
     // Play, Pause, and Stop
     void play();
