@@ -4,7 +4,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
     // Arduino to talk to.
-    serial.setup("/dev/cu.usbmodem1421", 9600);
+    serial.setup("/dev/cu.usbmodem14241", 9600);
   
     // Setup Osc.
     oscHandler.setup();
@@ -55,7 +55,7 @@ void ofApp::update(){
                 sensorVal2 = ofToInt(tokens[1]);
                 if (sensorVal2 > sensorValMin) {
                   // Map sensor value to Midi before sending to Midi handler.
-                  unsigned int mapped = ofMap(sensorVal1, sensorValMin, sensorValMax, 0, 127, true);
+                  unsigned int mapped = ofMap(sensorVal2, sensorValMin, sensorValMax, 0, 127, true);
                   Midi::instance().sendMidiControlChangeDishes(1, mapped);
                 }
             }
