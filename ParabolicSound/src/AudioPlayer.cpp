@@ -110,6 +110,33 @@ void AudioPlayer::addAudioEffect(SampleEffect effect) {
 
 void AudioPlayer::removeAudioEffect(SampleEffect effect) {
   std::vector<SampleEffect>::iterator it = find(currentSampleEffects.begin(), currentSampleEffects.end(), effect);
+  
+  // Reset that Audio effect that's removed.
+  switch (effect) {
+    case sDelay: {
+      //Reset delay.
+      0.0f >> delay.in_time();
+      0.0f >> delay.in_feedback();
+      break;
+    }
+    
+    case sDecimation: {
+      // Reset decimation.
+      20000 >> decimator.in_freq();
+      break;
+    }
+    
+    case sPitch: {
+      // Reset pitch.
+      0.0f >> sampler.in_pitch();
+      break;
+    }
+    
+    default: {
+      break;
+    }
+  }
+  
   currentSampleEffects.erase(it);
 }
 
@@ -130,12 +157,6 @@ void AudioPlayer::updateSampleAudio(float capRange) {
       switch (effect) {
         // Feedback
         case sDelay: {
-//          // Reset decimation.
-//          10000 >> decimator.in_freq();
-//          
-//          // Reset pitch.
-//          0.0f >> sampler.in_pitch();
-          
           float newDelayTime = ofMap(capRange, 0.0f, 1.0f, 0, 3000.0f, true);
           float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0, 3.0f, true);
           
@@ -146,13 +167,6 @@ void AudioPlayer::updateSampleAudio(float capRange) {
         
         // Decimation
         case sDecimation: {
-//          // Reset pitch.
-//          0.0f >> sampler.in_pitch();
-//          
-//          // Reset delay.
-//          0.0f >> delay.in_time();
-//          0.0f >> delay.in_feedback();
-          
           // Calculate the new decimator frequency based on the brightness.
           float newDecimatorFrequency = ofMap(capRange, 0.0f, 1.0f, 10000, 500, true);
           newDecimatorFrequency >> decimator.in_freq();
@@ -161,13 +175,6 @@ void AudioPlayer::updateSampleAudio(float capRange) {
         
         // Pitch
         case sPitch: {
-//          // Reset decimation.
-//          10000 >> decimator.in_freq();
-//          
-//          // Reset delay.
-//          0.0f >> delay.in_time();
-//          0.0f >> delay.in_feedback();
-          
           // Change pitch, opposite of the pattern of decimation frequency.
           float newPitch = ofMap(capRange, 0.0f, 1.0f, -6.0f, 0.0f, true);
           newPitch >> sampler.in_pitch();
@@ -194,7 +201,7 @@ void AudioPlayer::updateOscillator(float capRange) {
         
         // Only update the pitch for the oscillators that are turned on.
         for (TouchOscillator &osc : oscillators) {
-          if (osc.getIsOn()) {
+          if (osc.getIsOscOn()) {
             newPitch >> osc.in_pitch();
           }
         }
@@ -202,7 +209,11 @@ void AudioPlayer::updateOscillator(float capRange) {
       }
       
       case oDelay: {
-      
+        float newDelayTime = ofMap(capRange, 0.0f, 1.0f, 0, 3000.0f, true);
+        float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0, 3.0f, true);
+
+        newDelayTime >> delay.in_time();
+        newFeedbackTime >> delay.in_feedback();
         break;
       }
       
@@ -276,7 +287,7 @@ void AudioPlayer::startOscillator(Oscillator osc) {
 
 void AudioPlayer::stopOscillator(Oscillator osc) {
   int idx = static_cast<int>(osc);
-  // Turn off the oscillator off. 
+  // Turn off the oscillator off.
   oscillators[idx].setIsOscOn(false);
   oscillatorTriggers[idx].off();
 }
@@ -292,5 +303,30 @@ void AudioPlayer::addOscillatorEffect(OscillatorEffect effect) {
 
 void AudioPlayer::removeOscillatorEffect(OscillatorEffect effect) {
   std::vector<OscillatorEffect>::iterator it = find(currentOscillatorEffects.begin(), currentOscillatorEffects.end(), effect);
+  
+  // Loop through each sound effect and apply it on the sound.
+  for (OscillatorEffect &effect : currentOscillatorEffects) {
+    switch (effect) {
+      case oPitch: {
+        // Only update the pitch for the oscillators that are turned on.
+        for (TouchOscillator &osc : oscillators) {
+          if (osc.getIsOscOn()) {
+            0.0f >> osc.in_pitch();
+          }
+        }
+        break;
+      }
+      
+      case oDelay: {
+        newDelayTime >> oscDelay.in_time();
+        newFeedbackTime >> oscDelay.in_feedback();
+        break;
+      }
+      
+      default:
+        break;
+    }
+  }
+  
   currentOscillatorEffects.erase(it);
 }

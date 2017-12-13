@@ -31,7 +31,7 @@ bool TouchOscillator::getIsOscOn() {
   return isOn;
 }
 
-void TouchOscillator::setOscOn(bool flag) {
+void TouchOscillator::setIsOscOn(bool flag) {
   isOn = flag;
 }
 
