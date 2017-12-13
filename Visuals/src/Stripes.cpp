@@ -12,7 +12,7 @@ void Stripes::update(float newOffset, float newRotation, float newBlend) {
   float maxVol = CommonFFT::instance().fft.getSmoothedUnScaledLoudestValue();
   
   elapsedTime = ofGetElapsedTimef();
-  scale = ofSignedNoise(elapsedTime) * maxVol;
+  scale = ofSignedNoise(elapsedTime) * maxVol * 25;
   
   // Update values from Sliders.
   offset = newOffset;
@@ -67,7 +67,7 @@ void Stripes::stripeOne() {
           ofSetColor(hue, 255-blend);
           
           // Since fft values are normalized, we range it from -0-1
-          float stripeHeight = ofMap(fftSpectrum[x], 0, 1, 0, ofGetHeight() -50);
+          float stripeHeight = ofMap(fftSpectrum[x]*2, 0, 1, 0, ofGetHeight() -50);
         
           ofSetLineWidth(5);
           ofDrawLine(0, -stripeHeight/2, 0, stripeHeight/2);
