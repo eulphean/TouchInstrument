@@ -26,12 +26,13 @@ void AudioPlayer::patch() {
     // Default gain is 1.0f. Let all the signal pass through this.
     sampleGainAmpTrigger >> sampleGainAmp.in_mod();
     sampleGainAmpTrigger.trigger(1.0f);
+    1.0f >> sampleGainAmp.in_mod();
   
     // Defaut state of the system.
     sampleState = stopped;
 
     // Select the first sample by default.
-    sampleIdx = 0;
+    sampleIdx = 1;
     sampleIdx >> sampler.in_select();
 
     // Initialize all the oscillators.
@@ -124,7 +125,6 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
   switch (effect) {
     case sDelay: {
       //Reset delay.
-      0.0f >> delay.in_time();
       0.0f >> delay.in_feedback();
       break;
     }
@@ -172,8 +172,8 @@ void AudioPlayer::updateSampleAudio(float capRange) {
         case sDelay: {
           //float time = ofMap(capRange, 0.0f, 1.0f, 0.0f, 1000.0f, true);
           //time >> delay.in_time();
-          //float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0.0f, 1.0f, true);
-          capRange >> delay.in_feedback();
+          float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0.0f, 1.0f, true);
+          newFeedbackTime >> delay.in_feedback();
           break;
         }
         
