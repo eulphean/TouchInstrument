@@ -24,7 +24,8 @@ void Osc::update() {
 }
 
 void Osc::processCapacitiveValues(int val) {
-  float mappedVal = ofMap(val, capValMin, capValMax, 0, 1, true);
+  float mappedVal = ofMap(val, capValMin, capValMax, 0.0f, 1.0f, true);
+  cout << "Mapped val: " << mappedVal << endl;
   audioPlayer.update(mappedVal);
 }
 

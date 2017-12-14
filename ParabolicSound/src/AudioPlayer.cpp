@@ -7,11 +7,8 @@ void AudioPlayer::patch() {
     //--------PATCHING-------
   
     // ADSR Trigger - Without this the sample wouldn't play.
-    sampleTrig >> sampler >> sampleGainAmp >> amp;
+    sampleTrig >> sampler >> amp;
     envGate >> env.set(0.0f, 70.0f, 0.3f, 100.0f) >> amp.in_mod();
-  
-    // Default gain is 1.0f. Let all the signal pass through this.
-    1.0f >> sampleGainAmp.in_mod();
   
     // Oscillator amp.
     // Turn on the amp right away. We will control the oscillators
@@ -23,8 +20,12 @@ void AudioPlayer::patch() {
     decimator.set(20000);
   
     // Route the sampler to the output.
-    sampleTrig >> sampler * 2.0f >> amp >> delay >> decimator >> engine.audio_out(0);
-                             amp >> delay >> decimator >> engine.audio_out(1);
+    sampleTrig >> sampler * 2.0f >> amp >> sampleGainAmp >> delay >> decimator >> engine.audio_out(0);
+                                    amp >> sampleGainAmp >> delay >> decimator >> engine.audio_out(1);
+  
+    // Default gain is 1.0f. Let all the signal pass through this.
+    sampleGainAmpTrigger >> sampleGainAmp.in_mod();
+    sampleGainAmpTrigger.trigger(1.0f);
   
     // Defaut state of the system.
     sampleState = stopped;
@@ -95,7 +96,7 @@ void AudioPlayer::initOscillators() {
         
         // Triangle
         case 2: {
-          osc.out_triangle() * 0.02f >> oscAmp >> oscDelay >> engine.audio_out(0);
+          osc.out_triangle() * 0.1f >> oscAmp >> oscDelay >> engine.audio_out(0);
                                         oscAmp >> oscDelay >> engine.audio_out(1);
           break;
         }
@@ -150,7 +151,11 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
 
 void AudioPlayer::setAudioSampleGain(float oscVal) {
   float newGain = ofMap(oscVal, 0, 1, 0.0f, 10.0f, true);
-  newGain >> sampleGainAmp.in_mod();
+  if (newGain == 0) {
+    sampleGainAmpTrigger.off();
+  } else {
+    newGain >> sampleGainAmp.in_mod();
+  }
 }
 
 // Update audio if any effects are applied.
@@ -165,8 +170,10 @@ void AudioPlayer::updateSampleAudio(float capRange) {
       switch (effect) {
         // Feedback
         case sDelay: {
-          float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 1.0, 0.0f, true);
-          newFeedbackTime >> delay.in_feedback();
+          //float time = ofMap(capRange, 0.0f, 1.0f, 0.0f, 1000.0f, true);
+          //time >> delay.in_time();
+          //float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0.0f, 1.0f, true);
+          capRange >> delay.in_feedback();
           break;
         }
         
@@ -202,23 +209,27 @@ void AudioPlayer::updateOscillator(float capRange) {
   for (OscillatorEffect &effect : currentOscillatorEffects) {
     switch (effect) {
       case oPitch: {
-        float newPitch = ofMap(capRange, 0.0f, 1.0f, 45.0f, 85.0f, true);
-        
         // Only update the pitch for the oscillators that are turned on.
-        for (TouchOscillator &osc : oscillators) {
-          if (osc.getIsOscOn()) {
-            newPitch >> osc.in_pitch();
+        for (int i = 0; i < oscillators.size(); i++) {
+          if (oscillators[i].getIsOscOn()) {
+            // Calculate pitch range.
+            float startingPitch = defaultOscillatorPitches[i];
+            float endingPitch = startingPitch + 60.0f;
+            
+            // Set new pitch.
+            float newPitch = ofMap(capRange, 0.0f, 1.0f, startingPitch, endingPitch, true);
+            newPitch >> oscillators[i].in_pitch();
           }
         }
         break;
       }
       
       case oDelay: {
-        float newDelayTime = ofMap(capRange, 0.0f, 1.0f, 0, 3000.0f, true);
-        float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0, 3.0f, true);
+        //float newDelayTime = ofMap(capRange, 0.0f, 1.0f, 0, 3000.0f, true);
+        //float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0, 3.0f, true);
 
-        newDelayTime >> delay.in_time();
-        newFeedbackTime >> delay.in_feedback();
+        //newDelayTime >> delay.in_time();
+        capRange >> oscDelay.in_feedback();
         break;
       }
       
@@ -287,7 +298,6 @@ void AudioPlayer::startOscillator(Oscillator osc) {
   oscillatorTriggers[idx].trigger(1.0f);
   // Turn on the oscillator.
   oscillators[idx].setIsOscOn(true);
-  cout << "OSC_amp " << oscAmp.meter_mod() << endl;
 }
 
 void AudioPlayer::stopOscillator(Oscillator osc) {
@@ -298,8 +308,12 @@ void AudioPlayer::stopOscillator(Oscillator osc) {
 }
 
 void AudioPlayer::setOscillatorGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.2f, 2.5f, true);
-  newGain >> oscAmp.in_mod();
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 2.5f, true);
+  if (newGain == 0) {
+    oscAmpTrigger.off();
+  } else {
+    newGain >> oscAmp.in_mod();
+  }
 }
 
 void AudioPlayer::addOscillatorEffect(OscillatorEffect effect) {
@@ -317,17 +331,16 @@ void AudioPlayer::removeOscillatorEffect(OscillatorEffect effect) {
     switch (effect) {
       case oPitch: {
         // Only update the pitch for the oscillators that are turned on.
-        for (TouchOscillator &osc : oscillators) {
-          if (osc.getIsOscOn()) {
-            0.0f >> osc.in_pitch();
+        for (int i = 0; i < oscillators.size(); i++) {
+          if (oscillators[i].getIsOscOn()) {
+            defaultOscillatorPitches[i] >> oscillators[i].in_pitch();
           }
         }
         break;
       }
       
       case oDelay: {
-        0.0f >> delay.in_time();
-        0.0f >> delay.in_feedback();
+        0.0f >> oscDelay.in_feedback();
         break;
       }
       

@@ -95,6 +95,7 @@ private:
     // Sample amp
     pdsp::Amp  amp;
     pdsp::Amp sampleGainAmp;
+    ofxPDSPTrigger sampleGainAmpTrigger;
     pdsp::ADSR env;
     ofxPDSPTrigger envGate;
     ofxPDSPTrigger sampleTrig;
