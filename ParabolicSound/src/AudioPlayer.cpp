@@ -240,16 +240,19 @@ void AudioPlayer::updateOscillator(float capRange) {
 }
 
 void AudioPlayer::setNextSample() {
-  // Stop the current sample
-  stop();
-  
-  // Load next sample.
-  sampleIdx++;
-  sampleIdx = sampleIdx % totalSamples;
-  sampleIdx >> sampler.in_select();
-  
-  // Play that sample.
-  play();
+  // Only move the sample if the audio is playing.
+  if (sampleState == playing) {
+    // Stop the current sample
+    stop();
+    
+    // Load next sample.
+    sampleIdx++;
+    sampleIdx = sampleIdx % totalSamples;
+    sampleIdx >> sampler.in_select();
+    
+    // Play that sample.
+    play();
+  }
 }
 
 float AudioPlayer::getMeterPosition() {

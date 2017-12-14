@@ -69,7 +69,7 @@ public:
     State getPlaybackState();
     
 private:
-    const int totalSamples = 1;
+    const int totalSamples = 5;
     const vector<float> defaultOscillatorPitches = { 45.0f, 15.0f, 5.0f };
     const int oscillatorCount = 3;
 
@@ -84,6 +84,7 @@ private:
     pdsp::DampedDelay oscDelay;
   
     int sampleIdx;
+  
 
     // PDSP parameters.
     ofxPDSPEngine engine;

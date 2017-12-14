@@ -6,6 +6,10 @@ void Osc::setup() {
   
   // Setup Audio Player.
   audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/1.wav");
+  audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/2.wav");
+  audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/3.wav");
+  audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/4.wav");
+  audioPlayer.addSample("/Users/amaykataria/Documents/of_v20170714_osx_release/apps/TouchInstrument/ParabolicSound/bin/data/5.wav");
 }
 
 void Osc::update() {
@@ -38,6 +42,10 @@ void Osc::processAudioSignals(ofxOscMessage &m){
       } else {
         audioPlayer.pause();
       }
+    }
+  
+    if (m.getAddress() == "/Audio/nextsample") {
+      audioPlayer.setNextSample();
     }
   
     if (m.getAddress() == "/Audio/delay") {
