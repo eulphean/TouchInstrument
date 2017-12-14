@@ -36,6 +36,8 @@ class AudioPlayer : public pdsp::Patchable {
 public:
     AudioPlayer() { patch(); } 
     AudioPlayer( const AudioPlayer & other ) { patch(); }
+
+    void checkToLoopSample();
   
     // Uber update method to do any sort of updates of oscillators and audio samples. 
     void update(float capRange);

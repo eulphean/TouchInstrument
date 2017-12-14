@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
     // Arduino to talk to.
-    serial.setup("/dev/cu.usbmodem14241", 9600);
+    serial.setup("/dev/cu.usbmodem1421", 9600);
     
     // Setup the GUI.
     gui.setup("Cap Range");
@@ -37,28 +37,10 @@ void ofApp::update(){
         // End of line character.
         if (b == '\n')
         {
-            // Split the buffer on the commas.
-            std::vector<std::string> tokens = ofSplitString(buffer, ",");
-          
-            // The number of tokens in our packet is 2, here we check to make
-            // sure that our packet is correctly formed.
-            if (tokens.size() == 2)
-            {
-                // Capacitive touch dish Left.
-                sensorVal1 = ofToInt(tokens[0]);
-                if (sensorVal1 > sensorValMin) {
-                  // Map sensor value to Midi before sending to Midi handler.
-                }
-              
-                // Capacitive touch dish right.
-                sensorVal2 = ofToInt(tokens[1]);
-                if (sensorVal2 > sensorValMin) {
-                  // Map sensor value to Midi before sending to Midi handler.
-                }
-            }
-          
-            std::cout << ofToString(tokens) << std::endl;
-          
+            capVal = ofToInt(buffer);
+            std::cout << ofToString(capVal) << std::endl;
+            oscHandler.processCapacitiveValues(capVal);
+            
             // Empty the buffer.
             buffer = "";
         }

@@ -9,16 +9,23 @@ void Osc::setup() {
 }
 
 void Osc::update() {
-    // Touch OSC updates.
+  // Loop sample if it's done playing. 
+  audioPlayer.checkToLoopSample();
+  
+  // Touch OSC updates.
   while (receive.hasWaitingMessages()) {
     ofxOscMessage m;
     // Set the next message.
     #pragma warning(disable: WARNING_CODE)
     receive.getNextMessage(&m);
-    
     processAudioSignals(m);
     processOscillatorSignals(m);
   }
+}
+
+void Osc::processCapacitiveValues(int val) {
+  float mappedVal = ofMap(val, capValMin, capValMax, 0, 1, true);
+  audioPlayer.update(mappedVal);
 }
 
 void Osc::processAudioSignals(ofxOscMessage &m){
@@ -95,11 +102,21 @@ void Osc::processOscillatorSignals(ofxOscMessage &m) {
   }
 
   if (m.getAddress() == "/Oscillator/effect/pitch") {
-    // Change pitch.
+    int val = m.getArgAsInt(0);
+    if (val) {
+      audioPlayer.addOscillatorEffect(oPitch);
+    } else {
+      audioPlayer.removeOscillatorEffect(oPitch);
+    }
   }
 
   if (m.getAddress() == "/Oscillator/effect/delay") {
-    // Change delay.
+    int val = m.getArgAsInt(0);
+    if (val) {
+      audioPlayer.addOscillatorEffect(oDelay);
+    } else {
+      audioPlayer.removeOscillatorEffect(oDelay);
+    }
   }
   
   // Rotary knob. Float values
