@@ -2,8 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+  
     // Arduino to talk to.
-    serial.setup("/dev/cu.usbmodem1421", 9600);
+    serial.setup("/dev/cu.usbmodem1411", 9600);
     
     // Setup the GUI.
     gui.setup("Cap Range");

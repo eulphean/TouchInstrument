@@ -21,6 +21,6 @@ class Osc {
   
     // Based on Capacitive Sense library, setting a threshold sensitivity value.
     // Change this value if touches are not identified. 
-    const int capValMax = 140;
+    const int capValMax = 130;
     const int capValMin = 95;
 };
