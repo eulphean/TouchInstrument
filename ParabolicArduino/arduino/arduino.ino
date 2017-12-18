@@ -22,8 +22,8 @@ void loop()
 { 
   unsigned long currentTime = millis();
 
-  // Recalibrate every 30 seconds
-  if (currentTime - startTime > 60000) { // Every 30 seconds
+  // Recalibrate every 3 minutes
+  if (currentTime - startTime > 3 * 60000) { // Every 3 minutes
     startTime = currentTime;  
     cs_5_4.reset_CS_AutoCal();
   }
