@@ -6,7 +6,7 @@ CapacitiveSensor cs_5_4 = CapacitiveSensor(5,4); // 1M resistor between pins 4 &
 
 // Smoothing sensor1 values.
 float smoothSensor1 = 0;
-float correction = 0.95;
+float correction = 0.75;
 
 // Time
 unsigned long startTime = 0;

@@ -150,7 +150,7 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
 }
 
 void AudioPlayer::setAudioSampleGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.0f, 10.0f, true);
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 5.0f, true);
   if (newGain == 0) {
     sampleGainAmpTrigger.off();
   } else {
@@ -214,7 +214,7 @@ void AudioPlayer::updateOscillator(float capRange) {
           if (oscillators[i].getIsOscOn()) {
             // Calculate pitch range.
             float startingPitch = defaultOscillatorPitches[i];
-            float endingPitch = startingPitch + 60.0f;
+            float endingPitch = startingPitch + 25.0f;
             
             // Set new pitch.
             float newPitch = ofMap(capRange, 0.0f, 1.0f, startingPitch, endingPitch, true);
@@ -225,10 +225,6 @@ void AudioPlayer::updateOscillator(float capRange) {
       }
       
       case oDelay: {
-        //float newDelayTime = ofMap(capRange, 0.0f, 1.0f, 0, 3000.0f, true);
-        //float newFeedbackTime = ofMap(capRange, 0.0f, 1.0f, 0, 3.0f, true);
-
-        //newDelayTime >> delay.in_time();
         capRange >> oscDelay.in_feedback();
         break;
       }
@@ -311,7 +307,7 @@ void AudioPlayer::stopOscillator(Oscillator osc) {
 }
 
 void AudioPlayer::setOscillatorGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.0f, 2.5f, true);
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 3.0f, true);
   if (newGain == 0) {
     oscAmpTrigger.off();
   } else {
