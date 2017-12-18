@@ -20,7 +20,7 @@ void AudioPlayer::patch() {
     decimator.set(20000);
   
     // Route the sampler to the output.
-    sampleTrig >> sampler * 2.0f >> amp >> sampleGainAmp >> delay >> decimator >> engine.audio_out(0);
+    sampleTrig >> sampler >> amp >> sampleGainAmp >> delay >> decimator >> engine.audio_out(0);
                                     amp >> sampleGainAmp >> delay >> decimator >> engine.audio_out(1);
   
     // Default gain is 1.0f. Let all the signal pass through this.
@@ -150,7 +150,7 @@ void AudioPlayer::removeAudioEffect(SampleEffect effect) {
 }
 
 void AudioPlayer::setAudioSampleGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.0f, 5.0f, true);
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 2.5f, true);
   if (newGain == 0) {
     sampleGainAmpTrigger.off();
   } else {
@@ -307,7 +307,7 @@ void AudioPlayer::stopOscillator(Oscillator osc) {
 }
 
 void AudioPlayer::setOscillatorGain(float oscVal) {
-  float newGain = ofMap(oscVal, 0, 1, 0.0f, 3.0f, true);
+  float newGain = ofMap(oscVal, 0, 1, 0.0f, 1.0f, true);
   if (newGain == 0) {
     oscAmpTrigger.off();
   } else {
